@@ -23,7 +23,7 @@
             text-align: center;
         }
         .navbar-brand {
-            font-size: 1.8rem;
+            font-size: 1.5rem;
             font-weight: bold;
             color: white !important;
             transition: transform 0.3s ease;
@@ -51,12 +51,12 @@
         }
         .footer p {
             margin-bottom: 0;
-            font-size: 1rem;
+            font-size: 0.9rem;
         }
         .buy-coffee-btn {
             position: fixed;
             bottom: 70px;
-            right: 20px;
+            right: 10px;
             z-index: 1001;
             transition: transform 0.3s ease;
         }
@@ -71,7 +71,18 @@
         .floating-icon {
             animation: float 3s ease-in-out infinite;
             display: inline-block;
-            margin-right: 10px;
+            margin-right: 5px;
+        }
+        @media (max-width: 576px) {
+            .navbar-brand {
+                font-size: 1.2rem;
+            }
+            .footer p {
+                font-size: 0.8rem;
+            }
+            .buy-coffee-btn img {
+                height: 30px;
+            }
         }
     </style>
     {% block additional_styles %}{% endblock %}

@@ -6,5 +6,5 @@ set -o errexit  # Exit immediately if a command exits with a non-zero status
 pip install -r requirements.txt
 
 # Run database migrations
-flask db migrate -m "Initial migration" || echo "Migration already exists."
+flask db migrate -m "migrate 2" || echo "Migration already exists."
 flask db upgrade

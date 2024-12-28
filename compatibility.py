@@ -668,11 +668,28 @@ class ImprovedCompatibilityAnalyzer:
             
             if response.status_code == 200:
                 response_data = response.json()
-                return response_data['candidates'][0]['content']['parts'][0]['text']
-            else:
-                return f"Failed to generate narrative. Using fallback response for score {prompt.split('Score: ')[1].split('%')[0]}%"
                 
+                # Add debug logging
+                print("API Response:", response_data)  # For debugging
+                
+                # More robust response parsing with error handling
+                if 'candidates' in response_data and response_data['candidates']:
+                    candidate = response_data['candidates'][0]
+                    if 'content' in candidate and 'parts' in candidate['content']:
+                        parts = candidate['content']['parts']
+                        if parts and 'text' in parts[0]:
+                            return parts[0]['text']
+                
+                # If we couldn't parse the response as expected
+                score = prompt.split('Score: ')[1].split('%')[0]
+                return f"Failed to parse narrative response. Using fallback response for score {score}%"
+                
+            else:
+                print(f"API Error Response: {response.text}")  # Log error response
+                return f"Failed to generate narrative. Status code: {response.status_code}"
+                    
         except Exception as e:
+            print(f"Full error details: {str(e)}")  # Log full error
             return f"Narrative generation error: {str(e)}"
 
     def _generate_summary(self, metrics: Dict[str, Any]) -> str:
