@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+
+{% block additional_styles %}
+<style>
+    .loading-container {
+        max-width: 600px;
+        margin: 2rem auto;
+        text-align: center;
+    }
+    
+    .progress-stage {
+        margin: 2rem 0;
+    }
+    
+    .progress-icon {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+    }
+    
+    .fun-fact {
+        background: #f8f9fa;
+        padding: 1.5rem;
+        border-radius: 10px;
+        margin: 2rem 0;
+    }
+    
+    .stage-complete {
+        color: #198754;
+    }
+    
+    .stage-current {
+        color: #0d6efd;
+    }
+    
+    .stage-pending {
+        color: #6c757d;
+    }
+    
+    .progress-line {
+        height: 3px;
+        background: #e9ecef;
+        position: relative;
+        margin: 1rem 0;
+        border-radius: 3px;
+    }
+    
+    .progress-line-fill {
+        position: absolute;
+        height: 100%;
+        background: #0d6efd;
+        border-radius: 3px;
+        transition: width 0.3s ease;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="loading-container">
+    <h2 class="mb-4">Analyzing Compatibility</h2>
+    
+    <div class="progress-stages">
+        <div class="progress-stage" id="stage-auth">
+            <div class="progress-icon">🔐</div>
+            <h5>Authenticating</h5>
+        </div>
+        
+        <div class="progress-stage" id="stage-fetch">
+            <div class="progress-icon">📡</div>
+            <h5>Fetching Profiles</h5>
+        </div>
+        
+        <div class="progress-stage" id="stage-posts">
+            <div class="progress-icon">📝</div>
+            <h5>Analyzing Posts</h5>
+        </div>
+        
+        <div class="progress-stage" id="stage-analyzing">
+            <div class="progress-icon">🔍</div>
+            <h5>Generating Results</h5>
+        </div>
+    </div>
+    
+    <div class="progress-line">
+        <div class="progress-line-fill" style="width: 0%"></div>
+    </div>
+    
+    <div class="fun-fact mt-4">
+        <h5>Did you know? 🤔</h5>
+        <p id="fun-fact-text"></p>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const funFacts = [
+    "Social media interaction patterns can reveal a lot about compatibility between people!",
+    "Shared interests are one of the strongest indicators of potential friendship.",
+    "Communication style matching is a key factor in relationship success.",
+    "People who engage with similar content often have aligned values.",
+    "Regular social media activity can indicate lifestyle compatibility.",
+    "The timing of posts can show if two people have similar daily routines.",
+];
+
+const stages = {
+    'starting': 0,
+    'authenticating': 1,
+    'fetching_data': 2,
+    'fetching_posts': 3,
+    'analyzing': 4,
+    'complete': 5
+};
+
+function updateStages(currentStage) {
+    const currentStageNum = stages[currentStage];
+    const progressPercentage = (currentStageNum / 5) * 100;
+    
+    document.querySelector('.progress-line-fill').style.width = `${progressPercentage}%`;
+    
+    const stageElements = ['auth', 'fetch', 'posts', 'analyzing'];
+    stageElements.forEach((stage, index) => {
+        const element = document.getElementById(`stage-${stage}`);
+        if (index < currentStageNum) {
+            element.classList.add('stage-complete');
+            element.classList.remove('stage-current', 'stage-pending');
+        } else if (index === currentStageNum) {
+            element.classList.add('stage-current');
+            element.classList.remove('stage-complete', 'stage-pending');
+        } else {
+            element.classList.add('stage-pending');
+            element.classList.remove('stage-complete', 'stage-current');
+        }
+    });
+}
+
+function rotateFunFacts() {
+    const factElement = document.getElementById('fun-fact-text');
+    let currentIndex = 0;
+    
+    setInterval(() => {
+        factElement.textContent = funFacts[currentIndex];
+        currentIndex = (currentIndex + 1) % funFacts.length;
+    }, 5000);
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    rotateFunFacts();
+    
+    const checkStatus = async () => {
+        try {
+            const response = await fetch(`/check-status/{{ job_id }}`);
+            const data = await response.json();
+            
+            if (data.status === 'complete') {
+                window.location.href = data.redirect;
+            } else if (data.status === 'error') {
+                alert('Error: ' + data.message);
+                window.location.href = '/';
+            } else {
+                updateStages(data.status);
+                setTimeout(checkStatus, 1000);
+            }
+        } catch (error) {
+            console.error('Error checking status:', error);
+            setTimeout(checkStatus, 1000);
+        }
+    };
+    
+    checkStatus();
+});
+</script>
+{% endblock %}

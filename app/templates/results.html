@@ -1,0 +1,289 @@
+{% extends "base.html" %}
+{% block content %}
+{% if compatibility_result and compatibility_result.metrics %}
+<div class="container py-4">
+    <div class="card shadow">
+        <div class="card-body p-4">
+            <h2 class="text-center mb-4">
+                Compatibility Analysis for 
+                <span class="text-primary">@{{ compatibility_result.user1 }}</span> 
+                & 
+                <span class="text-primary">@{{ compatibility_result.user2 }}</span>
+            </h2>
+            
+            <!-- Overall Score Section -->
+            <div class="bg-light rounded-3 p-4 mb-4">
+                <div class="text-center position-relative">
+                    <!-- User Avatars -->
+                    <div class="d-flex justify-content-center align-items-center gap-4 mb-4">
+                        <div class="text-center">
+                            <img src="{{ compatibility_result.user1_avi }}" 
+                                alt="{{ compatibility_result.user1_name }}"
+                                class="rounded-circle mb-2"
+                                style="width: 80px; height: 80px; object-fit: cover; border: 3px solid #0d6efd;">
+                            <div class="fw-bold">{{ compatibility_result.user1_name }}</div>
+                        </div>
+                        
+                        <div class="score-circle mx-auto" 
+                            style="width: 200px; height: 200px; border-radius: 50%; display: flex; flex-direction: column; justify-content: center; align-items: center; 
+                                    background: {{ 'linear-gradient(45deg, #198754, #20c997)' if compatibility_result.metrics.overall >= 70 
+                                    else 'linear-gradient(45deg, #fd7e14, #ffc107)' if compatibility_result.metrics.overall >= 40 
+                                    else 'linear-gradient(45deg, #dc3545, #f06b6b)' }}">
+                            <span class="display-4 text-white fw-bold">{{ "%.1f"|format(compatibility_result.metrics.overall) }}%</span>
+                            <span class="text-white">Overall Compatibility</span>
+                        </div>
+                        
+                        <div class="text-center">
+                            <img src="{{ compatibility_result.user2_avi }}" 
+                                alt="{{ compatibility_result.user2_name }}"
+                                class="rounded-circle mb-2"
+                                style="width: 80px; height: 80px; object-fit: cover; border: 3px solid #0d6efd;">
+                            <div class="fw-bold">{{ compatibility_result.user2_name }}</div>
+                        </div>
+                    </div>
+                </div>
+
+            <!-- Narrative Cards -->
+            <div class="row g-4">
+                {% for category, narrative in compatibility_result.narratives.items() %}
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="me-2">{{ category_icons[category] }}</span>
+                                <span class="fw-bold">{{ category|capitalize }} Compatibility</span>
+                            </div>
+                            <span class="badge {{ 'bg-success' if compatibility_result.metrics.categories[category] >= 70 
+                                                else 'bg-warning' if compatibility_result.metrics.categories[category] >= 40 
+                                                else 'bg-danger' }}">
+                                {{ "%.1f"|format(compatibility_result.metrics.categories[category]) }}%
+                            </span>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text">{{ narrative }}</p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Analysis Metadata -->
+            <div class="text-center text-muted mt-4">
+                <p class="mb-1">Analysis generated on: {{ compatibility_result.analysis_metadata.timestamp|datetime }}</p>
+                <p class="mb-0">Based on {{ compatibility_result.analysis_metadata.posts_analyzed.user1 + compatibility_result.analysis_metadata.posts_analyzed.user2 }} total posts analyzed</p>
+            </div>
+
+            <div class="modal fade" id="shareCardModal" tabindex="-1" aria-labelledby="shareCardModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="shareCardModalLabel">Share Your Compatibility Results</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body d-flex justify-content-center">
+                            <!-- Compatibility Card for Sharing -->
+                            <div id="compatibilityCard" class="bg-white rounded-3 shadow p-4" style="width: 400px;">
+                                <!-- Header -->
+                                <div class="text-center mb-4">
+                                    <h3 class="text-primary fw-bold">SkyCrush Compatibility</h3>
+                                </div>
+                                
+                                <!-- Users -->
+                                <div class="text-center mb-4">
+                                    <div class="d-flex align-items-center justify-content-center gap-3">
+                                        <div class="text-center">
+                                            <img src="{{ compatibility_result.user1_avi }}" 
+                                                 alt="{{ compatibility_result.user1_name }}"
+                                                 class="rounded-circle mb-2"
+                                                 style="width: 50px; height: 50px; object-fit: cover; border: 2px solid #0d6efd;">
+                                            <div class="small fw-semibold">{{ compatibility_result.user1_name }}</div>
+                                        </div>
+                                        
+                                        <span class="fs-5">❤️</span>
+                                        
+                                        <div class="text-center">
+                                            <img src="{{ compatibility_result.user2_avi }}" 
+                                                 alt="{{ compatibility_result.user2_name }}"
+                                                 class="rounded-circle mb-2"
+                                                 style="width: 50px; height: 50px; object-fit: cover; border: 2px solid #0d6efd;">
+                                            <div class="small fw-semibold">{{ compatibility_result.user2_name }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Score Circle -->
+                                <div class="d-flex justify-content-center mb-4">
+                                    <div class="score-circle-share rounded-circle d-flex align-items-center justify-content-center" 
+                                         style="width: 120px; height: 120px; background: {{ 'linear-gradient(45deg, #198754, #20c997)' if compatibility_result.metrics.overall >= 70 else 'linear-gradient(45deg, #fd7e14, #ffc107)' if compatibility_result.metrics.overall >= 40 else 'linear-gradient(45deg, #dc3545, #f06b6b)' }}">
+                                        <div class="text-center text-white">
+                                            <div class="fs-2 fw-bold">{{ "%.1f"|format(compatibility_result.metrics.overall) }}%</div>
+                                            <div class="fs-6">Match</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Category Metrics -->
+                                <div class="mb-4">
+                                    <h6 class="text-center text-muted mb-3">Category Breakdown</h6>
+                                    <div class="d-flex flex-column gap-2">
+                                        {% for category, score in compatibility_result.metrics.categories.items() %}
+                                        <div class="d-flex align-items-center gap-2">
+                                            <div class="text-muted" style="width: 120px;">{{ category|capitalize }}</div>
+                                            <div class="flex-grow-1">
+                                                <div class="progress" style="height: 8px;">
+                                                    <div class="progress-bar {{ 'bg-success' if score >= 70 else 'bg-warning' if score >= 40 else 'bg-danger' }}"
+                                                         role="progressbar"
+                                                         style="width: {{ score }}%;"
+                                                         aria-valuenow="{{ score }}"
+                                                         aria-valuemin="0"
+                                                         aria-valuemax="100">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="text-end" style="width: 35px; font-size: 0.85rem;">
+                                                {{ "%.0f"|format(score) }}%
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+            
+                                <!-- Shared Interests -->
+                                {% if compatibility_result.metrics.shared_interests %}
+                                <div class="text-center mb-3">
+                                    <p class="text-muted mb-2 small">Shared Interests</p>
+                                    <div class="d-flex flex-wrap justify-content-center gap-2">
+                                        {% for interest in compatibility_result.metrics.shared_interests[:3] %}
+                                        <span class="badge bg-light text-primary">{{ interest }}</span>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                {% endif %}
+                                
+                                <!-- Footer -->
+                                <div class="text-center mt-4">
+                                    <p class="text-muted small mb-0">Try it at bluesky-compatibility.com</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer justify-content-center">
+                            <button type="button" class="btn btn-primary" id="downloadCard">
+                                <i class="bi bi-download me-2"></i>Download Card
+                            </button>
+                            <button type="button" class="btn btn-outline-primary share-result">
+                                <i class="bi bi-share me-2"></i>Share
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Update the action buttons section -->
+            <div class="d-flex justify-content-center gap-3 mt-4">
+                <a href="{{ url_for('main.home') }}" class="btn btn-outline-primary">New Analysis</a>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#shareCardModal">
+                    Share Results
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="container py-5">
+    <div class="card text-center shadow">
+        <div class="card-body p-5">
+            <h2 class="text-danger mb-3">Unable to Generate Analysis</h2>
+            <p class="mb-4">We couldn't generate the compatibility analysis. Please try again.</p>
+            <a href="{{ url_for('main.home') }}" class="btn btn-primary">Try Again</a>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block additional_styles %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.css">
+<style>
+    .score-circle {
+        transition: transform 0.3s ease;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    .score-circle:hover {
+        transform: scale(1.05);
+    }
+    .rounded-circle {
+        transition: transform 0.3s ease;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .rounded-circle:hover {
+        transform: scale(1.1);
+    }
+</style>
+{% endblock %}
+
+{% block scripts %}
+<!-- Add html2canvas library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Download functionality
+    document.getElementById('downloadCard').addEventListener('click', async function() {
+        try {
+            const card = document.getElementById('compatibilityCard');
+            const canvas = await html2canvas(card, {
+                scale: 2, // Higher quality
+                backgroundColor: '#ffffff',
+                logging: false
+            });
+            
+            // Create download link
+            const link = document.createElement('a');
+            link.download = 'compatibility-results.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        } catch (error) {
+            console.error('Error generating image:', error);
+            alert('Sorry, there was an error generating your image. Please try again.');
+        }
+    });
+
+    // Share functionality
+    document.querySelector('.share-result').addEventListener('click', async function() {
+        try {
+            const card = document.getElementById('compatibilityCard');
+            const canvas = await html2canvas(card, {
+                scale: 2,
+                backgroundColor: '#ffffff',
+                logging: false
+            });
+            
+            // Convert canvas to blob
+            canvas.toBlob(async function(blob) {
+                if (navigator.share) {
+                    const file = new File([blob], 'compatibility-results.png', { type: 'image/png' });
+                    try {
+                        await navigator.share({
+                            title: 'SkyCrush Compatibility Results',
+                            text: 'Check out our compatibility score!',
+                            files: [file]
+                        });
+                    } catch (err) {
+                        // Fallback to basic share if file sharing fails
+                        await navigator.share({
+                            title: 'SkyCrush Compatibility Results',
+                            text: `Check out our compatibility analysis! Overall score: {{ "%.1f"|format(compatibility_result.metrics.overall) }}%`,
+                            url: window.location.href
+                        });
+                    }
+                } else {
+                    alert('Sharing is not supported on this browser. You can download the image instead!');
+                }
+            });
+        } catch (error) {
+            console.error('Error sharing:', error);
+            alert('Sorry, there was an error sharing your results. Please try downloading instead.');
+        }
+    });
+});
+</script>
+{% endblock %}

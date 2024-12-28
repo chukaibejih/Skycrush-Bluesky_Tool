@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block additional_styles %}
+<style>
+    .form-container {
+        max-width: 600px;
+        margin: 2rem auto;
+    }
+    .form-label {
+        font-weight: 500;
+    }
+    .form-control:focus {
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+        border-color: #86b7fe;
+    }
+    .hero-section {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+    .hero-title {
+        font-size: 2.5rem;
+        font-weight: bold;
+        margin-bottom: 1rem;
+        background: linear-gradient(45deg, #0d6efd, #198754);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    .hero-subtitle {
+        font-size: 1.2rem;
+        color: #6c757d;
+        margin-bottom: 2rem;
+    }
+    .feature-card {
+        padding: 1.5rem;
+        border-radius: 1rem;
+        background: white;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        margin-bottom: 1rem;
+        transition: transform 0.3s ease;
+    }
+    .feature-card:hover {
+        transform: translateY(-5px);
+    }
+    .feature-icon {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+    }
+    @keyframes float {
+        0% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
+        100% { transform: translateY(0px); }
+    }
+    .floating-hearts {
+        position: absolute;
+        animation: float 3s ease-in-out infinite;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="container">
+    <div class="hero-section" data-aos="fade-up">
+        <h1 class="hero-title">Find Your SkyCrush Connection</h1>
+        <p class="hero-subtitle">Discover how compatible you are with other Bluesky users.</p>
+    </div>
+
+    <!-- Features Section -->
+    <div class="row mb-5">
+        <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+            <div class="feature-card text-center">
+                <div class="feature-icon">🤖</div>
+                <h3>AI-Powered Analysis</h3>
+                <p>Our advanced AI analyzes posts and interactions to determine compatibility scores</p>
+            </div>
+        </div>
+        <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+            <div class="feature-card text-center">
+                <div class="feature-icon">📊</div>
+                <h3>Detailed Insights</h3>
+                <p>Get comprehensive compatibility metrics across multiple categories</p>
+            </div>
+        </div>
+        <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
+            <div class="feature-card text-center">
+                <div class="feature-icon">🎯</div>
+                <h3>Real-Time Results</h3>
+                <p>Instant analysis and beautiful visualizations of your compatibility</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Form Section -->
+    <div class="form-container" data-aos="fade-up" data-aos-delay="400">
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+                <form action="{{ url_for('main.home') }}" method="post">
+                    <div class="mb-4">
+                        <label for="handle1" class="form-label"><strong>Enter your Bluesky handle:</strong></label>
+                        <input type="text" class="form-control form-control-lg" id="handle1" name="handle1" 
+                               placeholder="e.g., @user1.bsky.social" required>
+                    </div>
+                    <div class="mb-4">
+                        <label for="handle2" class="form-label"><strong>Enter your SkyCrush Bluesky handle:</strong></label>
+                        <input type="text" class="form-control form-control-lg" id="handle2" name="handle2" 
+                               placeholder="e.g., @user2.bsky.social" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-lg w-100">Check Compatibility</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
