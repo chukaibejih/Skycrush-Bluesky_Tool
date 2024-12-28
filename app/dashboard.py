@@ -80,10 +80,12 @@ def dashboard():
         func.count(CompatibilityCheck.id).label('count'),
         func.max(CompatibilityCheck.timestamp).label('last_check')
     ).group_by(
-        CompatibilityCheck.handle1
+        CompatibilityCheck.handle2
+    ).filter(
+        CompatibilityCheck.handle2.isnot(None)  # Ensure handle2 is not null
     ).order_by(
         func.count(CompatibilityCheck.id).desc()
-    ).limit(10).all()
+    ).limit(5).all()
 
     # Recent errors
     recent_errors = db.session.query(
