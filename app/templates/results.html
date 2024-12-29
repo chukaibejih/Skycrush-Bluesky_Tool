@@ -132,8 +132,8 @@
                                     <div class="d-flex flex-column gap-2">
                                         {% for category, score in compatibility_result.metrics.categories.items() %}
                                         <div class="d-flex align-items-center gap-2">
-                                            <div class="text-muted small" style="width: 80px;">{{ category|capitalize }}</div>
-                                            <div class="flex-grow-1">
+                                            <div class="text-muted small" style="width: 100px;">{{ category|capitalize }}</div>
+                                            <div class="flex-grow-1" style="max-width: 145px;">
                                                 <div class="progress" style="height: 6px;">
                                                     <div class="progress-bar {{ 'bg-success' if score >= 70 else 'bg-warning' if score >= 40 else 'bg-danger' }}"
                                                          role="progressbar"
@@ -144,7 +144,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="text-end small" style="width: 30px;">
+                                            <div class="text-end small" style="width: 30px; font-size: 0.70rem;">
                                                 {{ "%.0f"|format(score) }}%
                                             </div>
                                         </div>
