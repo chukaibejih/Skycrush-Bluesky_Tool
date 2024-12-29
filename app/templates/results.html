@@ -128,19 +128,19 @@
                                 
                                 <!-- Category Metrics -->
                                 <div class="mb-3 mb-md-4">
-                                    <h6 class="text-center text-muted mb-2 mb-md-3 small">Category Breakdown</h6>
-                                    <div class="d-flex flex-column gap-2">
+                                    <h6 class="text-center text-muted mb-3 small">Category Breakdown</h6>
+                                    <div class="d-flex flex-column align-items-center gap-2" style="max-width: 300px; margin: 0 auto;">
                                         {% for category, score in compatibility_result.metrics.categories.items() %}
-                                        <div class="d-flex align-items-center gap-2">
+                                        <div class="d-flex align-items-center justify-content-between w-100">
                                             <div class="text-muted small" style="width: 100px;">{{ category|capitalize }}</div>
-                                            <div class="flex-grow-1" style="max-width: 145px;">
+                                            <div class="flex-grow-1 mx-2" style="max-width: 120px;">
                                                 <div class="progress" style="height: 6px;">
                                                     <div class="progress-bar {{ 'bg-success' if score >= 70 else 'bg-warning' if score >= 40 else 'bg-danger' }}"
-                                                         role="progressbar"
-                                                         style="width: {{ score }}%;"
-                                                         aria-valuenow="{{ score }}"
-                                                         aria-valuemin="0"
-                                                         aria-valuemax="100">
+                                                        role="progressbar"
+                                                        style="width: {{ score }}%;"
+                                                        aria-valuenow="{{ score }}"
+                                                        aria-valuemin="0"
+                                                        aria-valuemax="100">
                                                     </div>
                                                 </div>
                                             </div>
@@ -151,7 +151,7 @@
                                         {% endfor %}
                                     </div>
                                 </div>
-            
+
                                 <!-- Shared Interests -->
                                 {% if compatibility_result.metrics.shared_interests %}
                                 <div class="text-center mb-3">
@@ -163,7 +163,7 @@
                                     </div>
                                 </div>
                                 {% endif %}
-                                
+
                                 <!-- Footer -->
                                 <div class="text-center mt-3 mt-md-4">
                                     <p class="text-muted small mb-0">Try it at www.skycrush.xyz</p>
