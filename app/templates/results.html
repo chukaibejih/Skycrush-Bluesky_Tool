@@ -44,23 +44,26 @@
                 </div>
             </div>
 
-            <!-- Narrative Cards -->
-            <div class="row g-3 g-md-4">
+            <!-- Narrative Cards Accordion -->
+            <div class="accordion mt-4" id="narrativeAccordion">
                 {% for category, narrative in compatibility_result.narratives.items() %}
-                <div class="col-12 col-md-6">
-                    <div class="card h-100">
-                        <div class="card-header d-flex justify-content-between align-items-center">
-                            <div>
-                                <span class="me-2">{{ category_icons[category] }}</span>
-                                <span class="fw-bold small">{{ category|capitalize }} Compatibility</span>
-                            </div>
-                            <span class="badge {{ 'bg-success' if compatibility_result.metrics.categories[category] >= 70 
-                                                else 'bg-warning' if compatibility_result.metrics.categories[category] >= 40 
-                                                else 'bg-danger' }}">
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="heading{{ category|capitalize }}">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#collapse{{ category|capitalize }}" aria-expanded="false"
+                                aria-controls="collapse{{ category|capitalize }}">
+                            <span class="me-2">{{ category_icons[category] }}</span>
+                            <span class="fw-bold">{{ category|capitalize }} Compatibility</span>
+                            <span class="ms-auto badge {{ 'bg-success' if compatibility_result.metrics.categories[category] >= 70 
+                                                        else 'bg-warning' if compatibility_result.metrics.categories[category] >= 40 
+                                                        else 'bg-danger' }}">
                                 {{ "%.1f"|format(compatibility_result.metrics.categories[category]) }}%
                             </span>
-                        </div>
-                        <div class="card-body">
+                        </button>
+                    </h2>
+                    <div id="collapse{{ category|capitalize }}" class="accordion-collapse collapse"
+                         aria-labelledby="heading{{ category|capitalize }}" data-bs-parent="#narrativeAccordion">
+                        <div class="accordion-body">
                             <p class="card-text small">{{ narrative }}</p>
                         </div>
                     </div>
@@ -252,6 +255,15 @@
             .score-label {
                 font-size: 0.875rem !important;
             }
+        }
+    }
+    .accordion-button:not(.collapsed) {
+        background-color: rgba(13, 110, 253, 0.1);
+        color: #0d6efd;
+    }
+    .accordion-button:focus {
+        box-shadow: none;
+        border-color: rgba(0,0,0,.125);
     }
 </style>
 {% endblock %}
@@ -322,3 +334,4 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 {% endblock %}
+

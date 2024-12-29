@@ -98,13 +98,19 @@
                 <form action="{{ url_for('main.home') }}" method="post">
                     <div class="mb-3">
                         <label for="handle1" class="form-label"><strong>Enter your Bluesky handle:</strong></label>
-                        <input type="text" class="form-control" id="handle1" name="handle1" 
-                               placeholder="e.g., @user1.bsky.social" required>
+                        <div class="input-group">
+                            <span class="input-group-text">@</span>
+                            <input type="text" class="form-control" id="handle1" name="handle1" 
+                                   placeholder="e.g., user1.bsky.social" pattern="[^@]+" required>
+                        </div>
                     </div>
                     <div class="mb-3">
                         <label for="handle2" class="form-label"><strong>Enter your SkyCrush Bluesky handle:</strong></label>
-                        <input type="text" class="form-control" id="handle2" name="handle2" 
-                               placeholder="e.g., @user2.bsky.social" required>
+                        <div class="input-group">
+                            <span class="input-group-text">@</span>
+                            <input type="text" class="form-control" id="handle2" name="handle2" 
+                                   placeholder="e.g., user2.bsky.social" pattern="[^@]+" required>
+                        </div>
                     </div>
                     <button type="submit" class="btn btn-primary w-100">Check Compatibility</button>
                 </form>

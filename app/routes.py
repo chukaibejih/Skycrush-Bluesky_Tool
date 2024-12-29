@@ -101,8 +101,12 @@ def process_compatibility(app: Flask, job_id: str, handle1: str, handle2: str):
 @bp.route("/", methods=["GET", "POST"])
 def home():
     if request.method == "POST":
-        handle1 = request.form.get("handle1")
-        handle2 = request.form.get("handle2")
+        handle1 = request.form.get("handle1", "").strip()
+        handle2 = request.form.get("handle2", "").strip()
+        
+        # Cleanup handles to ensure a single '@' prefix
+        handle1 = f"@{handle1.lstrip('@')}" if handle1 else ""
+        handle2 = f"@{handle2.lstrip('@')}" if handle2 else ""
         
         # Generate unique job ID
         job_id = str(uuid4())
