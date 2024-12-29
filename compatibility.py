@@ -911,12 +911,23 @@ class ImprovedCompatibilityAnalyzer:
         
         # Define value categories and associated keywords
         value_categories = {
-            'community': ['community', 'together', 'support', 'help', 'share'],
-            'achievement': ['goal', 'success', 'achieve', 'accomplish', 'win'],
-            'growth': ['learn', 'improve', 'grow', 'develop', 'progress'],
-            'creativity': ['create', 'design', 'imagine', 'innovative', 'original'],
-            'harmony': ['peace', 'balance', 'calm', 'harmony', 'understanding']
+            'community': ['community', 'together', 'support', 'help', 'share', 'collaborate', 'team', 'bond'],
+            'achievement': ['goal', 'success', 'achieve', 'accomplish', 'win', 'milestone', 'award', 'celebrate'],
+            'growth': ['learn', 'improve', 'grow', 'develop', 'progress', 'self-care', 'evolve', 'better'],
+            'creativity': ['create', 'design', 'imagine', 'innovate', 'original', 'craft', 'express', 'art'],
+            'harmony': ['peace', 'balance', 'calm', 'harmony', 'understanding', 'acceptance', 'meditate', 'zen'],
+            'adventure': ['adventure', 'explore', 'travel', 'discover', 'journey', 'wanderlust', 'trip', 'experience'],
+            'sustainability': ['sustain', 'eco', 'green', 'recycle', 'environment', 'nature', 'climate', 'planet'],
+            'leadership': ['lead', 'inspire', 'guide', 'mentor', 'direct', 'vision', 'empower', 'influence'],
+            'positivity': ['happy', 'joy', 'smile', 'positive', 'kindness', 'grateful', 'blessing', 'cheerful'],
+            'relationships': ['family', 'friends', 'love', 'bond', 'connection', 'relationship', 'partner', 'network'],
+            'activism': ['justice', 'rights', 'protest', 'equality', 'freedom', 'advocate', 'change', 'reform'],
+            'technology': ['tech', 'innovation', 'future', 'software', 'AI', 'device', 'app', 'digital'],
+            'humor': ['funny', 'joke', 'laugh', 'meme', 'hilarious', 'giggle', 'comedy', 'wit'],
+            'health': ['fitness', 'exercise', 'diet', 'healthy', 'wellness', 'mental', 'strength', 'workout'],
+            'sex': ['sexual', 'tits', 'titties', 'meat', 'dick', 'cum', 'anal', 'ass', 'plug', 'nudes', 'nsfw', '#afterdark', 'skeetsafterdark', 'pussy', 'squirt', 'sex', 'boobs']
         }
+
         
         # Calculate value scores
         scores = {}
