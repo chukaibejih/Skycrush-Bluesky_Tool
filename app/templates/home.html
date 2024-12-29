@@ -13,6 +13,10 @@
         box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
         border-color: #86b7fe;
     }
+    .page-container {
+        display: flex;
+        flex-direction: column;
+    }
     .hero-section {
         text-align: center;
         margin-bottom: 2rem;
@@ -69,42 +73,22 @@
         }
         .form-container {
             padding: 0 1rem;
+            order: 1;
+        }
+        .features-section {
+            order: 2;
+            margin-top: 2rem;
         }
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<!-- Hero Section -->
-<div class="container">
+<div class="container page-container">
+    <!-- Hero Section -->
     <div class="hero-section" data-aos="fade-up">
         <h1 class="hero-title">Find Your SkyCrush Connection</h1>
         <p class="hero-subtitle">Discover how compatible you are with other Bluesky users.</p>
-    </div>
-
-    <!-- Features Section -->
-    <div class="row mb-4">
-        <div class="col-md-4 mb-3" data-aos="fade-up" data-aos-delay="100">
-            <div class="feature-card text-center">
-                <div class="feature-icon">🤖</div>
-                <h3 class="h5">AI-Powered Analysis</h3>
-                <p class="small">Our advanced AI analyzes posts and interactions to determine compatibility scores</p>
-            </div>
-        </div>
-        <div class="col-md-4 mb-3" data-aos="fade-up" data-aos-delay="200">
-            <div class="feature-card text-center">
-                <div class="feature-icon">📊</div>
-                <h3 class="h5">Detailed Insights</h3>
-                <p class="small">Get comprehensive compatibility metrics across multiple categories</p>
-            </div>
-        </div>
-        <div class="col-md-4 mb-3" data-aos="fade-up" data-aos-delay="300">
-            <div class="feature-card text-center">
-                <div class="feature-icon">🎯</div>
-                <h3 class="h5">Real-Time Results</h3>
-                <p class="small">Instant analysis and beautiful visualizations of your compatibility</p>
-            </div>
-        </div>
     </div>
 
     <!-- Form Section -->
@@ -127,6 +111,30 @@
             </div>
         </div>
     </div>
+
+    <!-- Features Section -->
+    <div class="features-section row mb-4">
+        <div class="col-md-4 mb-3" data-aos="fade-up" data-aos-delay="100">
+            <div class="feature-card text-center">
+                <div class="feature-icon">🤖</div>
+                <h3 class="h5">AI-Powered Analysis</h3>
+                <p class="small">Our advanced AI analyzes posts and interactions to determine compatibility scores</p>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3" data-aos="fade-up" data-aos-delay="200">
+            <div class="feature-card text-center">
+                <div class="feature-icon">📊</div>
+                <h3 class="h5">Detailed Insights</h3>
+                <p class="small">Get comprehensive compatibility metrics across multiple categories</p>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3" data-aos="fade-up" data-aos-delay="300">
+            <div class="feature-card text-center">
+                <div class="feature-icon">🎯</div>
+                <h3 class="h5">Real-Time Results</h3>
+                <p class="small">Instant analysis and beautiful visualizations of your compatibility</p>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}
-

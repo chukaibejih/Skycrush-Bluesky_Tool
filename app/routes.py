@@ -9,6 +9,8 @@ import time
 from flask import request, jsonify
 from app.models import db, AppMetrics, CompatibilityCheck, ShareMetrics
 from flask import current_app, Flask
+import base64
+import requests
 
 bp = Blueprint("main", __name__)
 
@@ -162,6 +164,19 @@ def results():
         result_data = completed_results.pop(result_id)
         compatibility_result = result_data['result']
         
+        # Convert avatars to base64
+        def convert_image_to_base64(image_url):
+            try:
+                response = requests.get(image_url)
+                response.raise_for_status()
+                return f"data:image/jpeg;base64,{base64.b64encode(response.content).decode('utf-8')}"
+            except Exception as e:
+                print(f"Error fetching image: {e}")
+                return None
+        
+        compatibility_result['user1_avi'] = convert_image_to_base64(compatibility_result['user1_avi'])
+        compatibility_result['user2_avi'] = convert_image_to_base64(compatibility_result['user2_avi'])
+
         category_icons = {
             'romantic': '❤️',
             'friendship': '🤝',

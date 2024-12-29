@@ -633,7 +633,7 @@ class ImprovedCompatibilityAnalyzer:
             f"Key Compatibility Factors: {', '.join(compatibility_factors)}\n"
             "Guidelines:\n"
             "- Adopt a conversational and friendly tone\n"
-            "- You are allowed to use slangs, informal and vulgar words\n"
+            "- Use engaging, relatable language, avoiding overly formal tones\n"
             "- Add depth to the narrative\n"
             "- Highlight both positive and constructive aspects of their compatibility\n"
             "- Emphasize the value of shared interests and unique traits\n"
@@ -656,12 +656,19 @@ class ImprovedCompatibilityAnalyzer:
         try:
             url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-001:generateContent?key={self.GOOGLE_API_KEY}"
             
+            # Include safety settings to allow HARM_CATEGORY_SEXUALLY_EXPLICIT
             data = {
                 "contents": [{
                     "parts": [{
                         "text": prompt
                     }]
-                }]
+                }],
+                "safetySettings": [
+                    {
+                        "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+                        "threshold": "BLOCK_NONE"  # Always allow content regardless of probability
+                    }
+                ]
             }
             
             response = requests.post(url, json=data)
