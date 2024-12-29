@@ -18,21 +18,25 @@ bp = Blueprint("main", __name__)
 processing_jobs = {}
 completed_results = {}
 
+# Initialize BlueskyAPI with your credentials
+bluesky = BlueskyAPI()
+BLUESKY_USERNAME = os.getenv('BLUESKY_USERNAME')
+BLUESKY_PASSWORD = os.getenv('BLUESKY_PASSWORD')
+
 def process_compatibility(app: Flask, job_id: str, handle1: str, handle2: str):
     with app.app_context():
         start_time = time.time()
         # try:
         print(f"Starting process for job {job_id}")
-        bluesky = BlueskyAPI()
-        BLUESKY_USERNAME = os.getenv("BLUESKY_USERNAME")
-        BLUESKY_PASSWORD = os.getenv("BLUESKY_PASSWORD")
         
         if not BLUESKY_USERNAME or not BLUESKY_PASSWORD:
             raise ValueError("Bluesky credentials not found in environment variables")
-            
-        print(f"Attempting to authenticate with Bluesky")
-        processing_jobs[job_id]['status'] = 'authenticating'
-        bluesky.login(BLUESKY_USERNAME, BLUESKY_PASSWORD)
+        
+        # Login only if not already authenticated
+        if not bluesky.auth_token:
+            login_result = bluesky.login(BLUESKY_USERNAME, BLUESKY_PASSWORD)
+            if not login_result['success']:
+                raise Exception("Failed to authenticate with Bluesky")
         
         print(f"Fetching user data")
         processing_jobs[job_id]['status'] = 'fetching_data'
