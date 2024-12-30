@@ -100,6 +100,12 @@ const funFacts = [
     "People who engage with similar content often have aligned values.",
     "Regular social media activity can indicate lifestyle compatibility.",
     "The timing of posts can show if two people have similar daily routines.",
+    "Social media interaction patterns can reveal a lot about compatibility between people!",
+    "Shared interests are one of the strongest indicators of potential friendship.",
+    "Communication style matching is a key factor in relationship success.",
+    "People who engage with similar content often have aligned values.",
+    "Regular social media activity can indicate lifestyle compatibility.",
+    "The timing of posts can show if two people have similar daily routines.",
 ];
 
 const stages = {
@@ -115,6 +121,7 @@ function updateStages(currentStage) {
     const currentStageNum = stages[currentStage];
     const progressPercentage = (currentStageNum / 5) * 100;
     
+    document.querySelector('.progress-line-fill').style.width = `${progressPercentage}%`;
     document.querySelector('.progress-line-fill').style.width = `${progressPercentage}%`;
     
     const stageElements = ['auth', 'fetch', 'posts', 'analyzing'];
@@ -138,6 +145,8 @@ function rotateFunFacts() {
     let currentIndex = 0;
     
     setInterval(() => {
+        factElement.textContent = funFacts[currentIndex];
+        currentIndex = (currentIndex + 1) % funFacts.length;
         factElement.textContent = funFacts[currentIndex];
         currentIndex = (currentIndex + 1) % funFacts.length;
     }, 5000);

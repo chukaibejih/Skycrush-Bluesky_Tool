@@ -292,7 +292,6 @@
 
 
 
-import json
 import math
 import os
 import random
@@ -344,19 +343,8 @@ class ImprovedCompatibilityAnalyzer:
             'academic': ['research', 'study', 'learning', 'science', 'phd', 'academic', 'university'],
             'lifestyle': ['fitness', 'health', 'food', 'travel', 'fashion', 'lifestyle'],
             'social': ['friends', 'family', 'community', 'social', 'party', 'meetup'],
-            'professional': ['work', 'business', 'career', 'job', 'professional', 'industry'],
-            'health': ['fitness', 'exercise', 'diet', 'healthy', 'wellness', 'mental', 'strength', 'workout'],
-            'sex': ['sexual', 'tits', 'titties', 'meat', 'dick', 'cum', 'anal', 'ass', 'plug', 'nudes', 'nsfw', '#afterdark', 'skeetsafterdark', 'pussy', 'squirt', 'sex', 'boobs', 'horny']
+            'professional': ['work', 'business', 'career', 'job', 'professional', 'industry']
         }
-
-        self.GOOGLE_API_KEY_1 = os.getenv("GOOGLE_API_KEY_1")
-        self.GOOGLE_API_KEY_2 = os.getenv("GOOGLE_API_KEY_2")
-        if not self.GOOGLE_API_KEY_1 or not self.GOOGLE_API_KEY_2:
-            raise ValueError("Both GOOGLE_API_KEY_1 and GOOGLE_API_KEY_2 must be set in environment variables")
-
-    def _get_random_api_key(self):
-            """Randomly select one of the API keys"""
-            return random.choice([self.GOOGLE_API_KEY_1, self.GOOGLE_API_KEY_2])
 
     def generate_compatibility_analysis(self, 
                                      user1_data: Dict[Any, Any],
@@ -663,135 +651,52 @@ class ImprovedCompatibilityAnalyzer:
 
         return base_prompt
 
-    def _generate_enhanced_narratives(self, context: Dict[str, Any], metrics: Dict[str, Any]) -> Dict[str, str]:
-        """Generate personalized compatibility narratives in a single API call"""
-        try:
-            # Create a combined prompt for all categories
-            shared_interests = metrics["shared_interests"]
-            compatibility_factors = metrics["compatibility_factors"]
-            
-            base_prompt = (
-                f"Generate compatibility narratives for multiple categories between two users.\n"
-                f"User 1: {context['user1']['display_name']} (Profile Summary: {context['user1']['description']}, Posts: {context['user1']['posts']})\n"
-                f"User 2: {context['user2']['display_name']} (Profile Summary: {context['user2']['description']}, Posts: {context['user2']['posts']})\n"
-                f"Shared Interests: {', '.join(shared_interests)}\n"
-                f"Key Compatibility Factors: {', '.join(compatibility_factors)}\n\n"
-                "Guidelines:\n"
-                "- Adopt a conversational and friendly tone\n"
-                "- Use engaging, relatable language\n"
-                "- Add depth to each narrative\n"
-                "- Highlight both positive and constructive aspects\n"
-                "- Emphasize shared interests and unique traits\n"
-                "- Provide actionable insights\n"
-                "- For scores below 30%, feel free to playfully roast the compatibility (keep it light and fun!)\n"
-                "- When roasting, focus on the situation, not the individuals\n"
-                "- Mix in pop culture references for extra humor when appropriate\n"
-                "- DO NOT quote specific posts\n"
-                "- Keep each narrative within 150 words\n\n"
-                "Your entire response/output is going to consist of a single JSON object {}, and you  MUST NOT wrap it within JSON md markers.\n"
-                "Ensure all double quotes within string values are properly escaped using a backslash (\).\n"
-                "Return a JSON object with the following structure:\n"
-                "{\n"
-                '  "romantic": "narrative for romantic compatibility",\n'
-                '  "friendship": "narrative for friendship compatibility",\n'
-                '  "emotional": "narrative for emotional compatibility",\n'
-                '  "communication": "narrative for communication compatibility",\n'
-                '  "values": "narrative for values compatibility",\n'
-                '  "lifestyle": "narrative for lifestyle compatibility"\n'
-                "}\n\n"
-                "Include scores in narratives:\n"
-                f"Romantic Score: {metrics['categories']['romantic']}%\n"
-                f"Friendship Score: {metrics['categories']['friendship']}%\n"
-                f"Emotional Score: {metrics['categories']['emotional']}%\n"
-                f"Communication Score: {metrics['categories']['communication']}%\n"
-                f"Values Score: {metrics['categories']['values']}%\n"
-                f"Lifestyle Score: {metrics['categories']['lifestyle']}%"
-            )
-
-            url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-001:generateContent?key={self.GOOGLE_API_KEY}"
-            
-            data = {
-                "contents": [{
-                    "parts": [{
-                        "text": base_prompt
-                    }]
-                }],
-                "safetySettings": [{
-                    "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT",
-                    "threshold": "BLOCK_NONE"
-                }]
-            }
-            
-            response = requests.post(url, json=data)
-            
-            if response.status_code == 200:
-                response_data = response.json()
-                if 'candidates' in response_data and response_data['candidates']:
-                    narrative_text = response_data['candidates'][0]['content']['parts'][0]['text']
-                    print("narrative_text---", narrative_text)
-                    
-                    # Extract JSON from the response
-                    # try:
-                        # Find the JSON object in the response text
-                    json_start = narrative_text.find('{')
-                    json_end = narrative_text.rfind('}') + 1
-                    if json_start >= 0 and json_end > json_start:
-                        json_str = narrative_text[json_start:json_end]
-                        
-                        narratives = json.loads(json_str)
-                        
-                        # Verify all required categories are present
-                        required_categories = ["romantic", "friendship", "emotional", "communication", "values", "lifestyle"]
-                        for category in required_categories:
-                            if category not in narratives:
-                                narratives[category] = f"Failed to generate {category} narrative."
-                                
-                        return narratives
-                    # except json.JSONDecodeError:
-                    #     print("Failed to parse JSON from response")
-                        
-            # Fallback responses if API call fails
-            return {
-                "romantic": f"Failed to generate romantic compatibility narrative. Score: {metrics['categories']['romantic']}%",
-                "friendship": f"Failed to generate friendship compatibility narrative. Score: {metrics['categories']['friendship']}%",
-                "emotional": f"Failed to generate emotional compatibility narrative. Score: {metrics['categories']['emotional']}%",
-                "communication": f"Failed to generate communication compatibility narrative. Score: {metrics['categories']['communication']}%",
-                "values": f"Failed to generate values compatibility narrative. Score: {metrics['categories']['values']}%",
-                "lifestyle": f"Failed to generate lifestyle compatibility narrative. Score: {metrics['categories']['lifestyle']}%"
-            }
-        except Exception as e:
-            print(f"Error generating narratives: {str(e)}")
-            return {category: f"Error generating narrative: {str(e)}" for category in metrics['categories']}
-
     def _generate_narrative_with_ai(self, prompt: str) -> str:
-        """
-        This method is now deprecated as narratives are generated in batch
-        Kept for backward compatibility
-        """
+        """Generate narrative using AI"""
         try:
             url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-001:generateContent?key={self.GOOGLE_API_KEY}"
+            
+            # Include safety settings to allow HARM_CATEGORY_SEXUALLY_EXPLICIT
             data = {
                 "contents": [{
                     "parts": [{
                         "text": prompt
                     }]
                 }],
-                "safetySettings": [{
-                    "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT",
-                    "threshold": "BLOCK_NONE"
-                }]
+                "safetySettings": [
+                    {
+                        "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+                        "threshold": "BLOCK_NONE"  # Always allow content regardless of probability
+                    }
+                ]
             }
             
             response = requests.post(url, json=data)
             
             if response.status_code == 200:
                 response_data = response.json()
+                
+                # Add debug logging
+                print("API Response:", response_data)  # For debugging
+                
+                # More robust response parsing with error handling
                 if 'candidates' in response_data and response_data['candidates']:
-                    return response_data['candidates'][0]['content']['parts'][0]['text']
-            
-            return f"Failed to generate narrative. Status code: {response.status_code}"
-                        
+                    candidate = response_data['candidates'][0]
+                    if 'content' in candidate and 'parts' in candidate['content']:
+                        parts = candidate['content']['parts']
+                        if parts and 'text' in parts[0]:
+                            return parts[0]['text']
+                
+                # If we couldn't parse the response as expected
+                score = prompt.split('Score: ')[1].split('%')[0]
+                return f"Failed to parse narrative response. Using fallback response for score {score}%"
+                
+            else:
+                print(f"API Error Response: {response.text}")  # Log error response
+                return f"Failed to generate narrative. Status code: {response.status_code}"
+                    
         except Exception as e:
+            print(f"Full error details: {str(e)}")  # Log full error
             return f"Narrative generation error: {str(e)}"
 
     def _generate_summary(self, metrics: Dict[str, Any]) -> str:
@@ -1020,7 +925,7 @@ class ImprovedCompatibilityAnalyzer:
             'technology': ['tech', 'innovation', 'future', 'software', 'AI', 'device', 'app', 'digital'],
             'humor': ['funny', 'joke', 'laugh', 'meme', 'hilarious', 'giggle', 'comedy', 'wit'],
             'health': ['fitness', 'exercise', 'diet', 'healthy', 'wellness', 'mental', 'strength', 'workout'],
-            'sex': ['sexual', 'tits', 'horny', 'titties', 'meat', 'dick', 'cum', 'anal', 'ass', 'plug', 'nudes', 'nsfw', '#afterdark', 'skeetsafterdark', 'pussy', 'squirt', 'sex', 'boobs']
+            'sex': ['sexual', 'tits', 'titties', 'meat', 'dick', 'cum', 'anal', 'ass', 'plug', 'nudes', 'nsfw', '#afterdark', 'skeetsafterdark', 'pussy', 'squirt', 'sex', 'boobs']
         }
 
         
