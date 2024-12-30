@@ -4,25 +4,24 @@
 <style>
     .loading-container {
         max-width: 600px;
-        margin: 1rem auto;
+        margin: 2rem auto;
         text-align: center;
-        padding: 0 1rem;
     }
     
     .progress-stage {
-        margin: 1.5rem 0;
+        margin: 2rem 0;
     }
     
     .progress-icon {
-        font-size: 1.75rem;
-        margin-bottom: 0.75rem;
+        font-size: 2rem;
+        margin-bottom: 1rem;
     }
     
     .fun-fact {
         background: #f8f9fa;
-        padding: 1.25rem;
+        padding: 1.5rem;
         border-radius: 10px;
-        margin: 1.5rem 0;
+        margin: 2rem 0;
     }
     
     .stage-complete {
@@ -52,68 +51,32 @@
         border-radius: 3px;
         transition: width 0.3s ease;
     }
-
-    @media (max-width: 576px) {
-        .loading-container {
-            margin: 0.5rem auto;
-        }
-
-        h2 {
-            font-size: 1.5rem;
-        }
-
-        .progress-stage {
-            margin: 1rem 0;
-        }
-
-        .progress-icon {
-            font-size: 1.5rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .progress-stage h5 {
-            font-size: 0.9rem;
-        }
-
-        .fun-fact {
-            padding: 1rem;
-            margin: 1rem 0;
-        }
-
-        .fun-fact h5 {
-            font-size: 1rem;
-        }
-
-        .fun-fact p {
-            font-size: 0.9rem;
-        }
-    }
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="loading-container">
-    <h2 class="mb-3 mb-md-4">Analyzing Compatibility</h2>
+    <h2 class="mb-4">Analyzing Compatibility</h2>
     
     <div class="progress-stages">
         <div class="progress-stage" id="stage-auth">
             <div class="progress-icon">🔐</div>
-            <h5 class="mb-0">Authenticating</h5>
+            <h5>Authenticating</h5>
         </div>
         
         <div class="progress-stage" id="stage-fetch">
             <div class="progress-icon">📡</div>
-            <h5 class="mb-0">Fetching Profiles</h5>
+            <h5>Fetching Profiles</h5>
         </div>
         
         <div class="progress-stage" id="stage-posts">
             <div class="progress-icon">📝</div>
-            <h5 class="mb-0">Analyzing Posts</h5>
+            <h5>Analyzing Posts</h5>
         </div>
         
         <div class="progress-stage" id="stage-analyzing">
             <div class="progress-icon">🔍</div>
-            <h5 class="mb-0">Generating Results</h5>
+            <h5>Generating Results</h5>
         </div>
     </div>
     
@@ -121,9 +84,9 @@
         <div class="progress-line-fill" style="width: 0%"></div>
     </div>
     
-    <div class="fun-fact mt-3 mt-md-4">
-        <h5 class="mb-2">Did you know? 🤔</h5>
-        <p id="fun-fact-text" class="mb-0"></p>
+    <div class="fun-fact mt-4">
+        <h5>Did you know? 🤔</h5>
+        <p id="fun-fact-text"></p>
     </div>
 </div>
 {% endblock %}
@@ -131,6 +94,12 @@
 {% block scripts %}
 <script>
 const funFacts = [
+    "Social media interaction patterns can reveal a lot about compatibility between people!",
+    "Shared interests are one of the strongest indicators of potential friendship.",
+    "Communication style matching is a key factor in relationship success.",
+    "People who engage with similar content often have aligned values.",
+    "Regular social media activity can indicate lifestyle compatibility.",
+    "The timing of posts can show if two people have similar daily routines.",
     "Social media interaction patterns can reveal a lot about compatibility between people!",
     "Shared interests are one of the strongest indicators of potential friendship.",
     "Communication style matching is a key factor in relationship success.",
@@ -152,6 +121,7 @@ function updateStages(currentStage) {
     const currentStageNum = stages[currentStage];
     const progressPercentage = (currentStageNum / 5) * 100;
     
+    document.querySelector('.progress-line-fill').style.width = `${progressPercentage}%`;
     document.querySelector('.progress-line-fill').style.width = `${progressPercentage}%`;
     
     const stageElements = ['auth', 'fetch', 'posts', 'analyzing'];
@@ -175,6 +145,8 @@ function rotateFunFacts() {
     let currentIndex = 0;
     
     setInterval(() => {
+        factElement.textContent = funFacts[currentIndex];
+        currentIndex = (currentIndex + 1) % funFacts.length;
         factElement.textContent = funFacts[currentIndex];
         currentIndex = (currentIndex + 1) % funFacts.length;
     }, 5000);
@@ -207,4 +179,3 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 {% endblock %}
-
