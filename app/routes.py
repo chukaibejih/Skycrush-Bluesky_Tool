@@ -45,8 +45,8 @@ def process_compatibility(app: Flask, job_id: str, handle1: str, handle2: str):
         
         print(f"Fetching posts")
         processing_jobs[job_id]['status'] = 'fetching_posts'
-        user1_posts = bluesky.fetch_user_posts(handle1, limit=20)['feed']
-        user2_posts = bluesky.fetch_user_posts(handle2, limit=20)['feed']
+        user1_posts = bluesky.fetch_user_posts(handle1, limit=50)['feed']
+        user2_posts = bluesky.fetch_user_posts(handle2, limit=50)['feed']
         
         print(f"Analyzing data")
         processing_jobs[job_id]['status'] = 'analyzing'
