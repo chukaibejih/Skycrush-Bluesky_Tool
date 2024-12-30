@@ -3,89 +3,166 @@
 {% block additional_styles %}
 <style>
     .loading-container {
-        max-width: 600px;
-        margin: 1rem auto;
+        max-width: 800px;
+        margin: 2rem auto;
         text-align: center;
         padding: 0 1rem;
     }
     
+    .progress-stages {
+        display: flex;
+        justify-content: space-between;
+        margin: 2rem 0;
+        position: relative;
+    }
+    
     .progress-stage {
-        margin: 1.5rem 0;
+        flex: 1;
+        position: relative;
+        padding: 0 10px;
+        transition: all 0.5s ease;
     }
     
     .progress-icon {
+        width: 60px;
+        height: 60px;
+        margin: 0 auto 1rem;
+        background: #fff;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         font-size: 1.75rem;
-        margin-bottom: 0.75rem;
-    }
-    
-    .fun-fact {
-        background: #f8f9fa;
-        padding: 1.25rem;
-        border-radius: 10px;
-        margin: 1.5rem 0;
-    }
-    
-    .stage-complete {
-        color: #198754;
-    }
-    
-    .stage-current {
-        color: #0d6efd;
-    }
-    
-    .stage-pending {
-        color: #6c757d;
+        position: relative;
+        border: 3px solid #e9ecef;
+        transition: all 0.5s ease;
     }
     
     .progress-line {
         height: 3px;
         background: #e9ecef;
-        position: relative;
-        margin: 1rem 0;
-        border-radius: 3px;
-    }
-    
-    .progress-line-fill {
         position: absolute;
-        height: 100%;
-        background: #0d6efd;
-        border-radius: 3px;
-        transition: width 0.3s ease;
+        top: 30px;
+        left: 50%;
+        right: 50%;
+        z-index: -1;
     }
 
-    @media (max-width: 576px) {
-        .loading-container {
-            margin: 0.5rem auto;
+    .compatibility-meter {
+        width: 200px;
+        height: 200px;
+        margin: 2rem auto;
+        position: relative;
+    }
+
+    .meter-circle {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        background: conic-gradient(from 0deg, #0d6efd 0%, #e9ecef 0%);
+        transition: all 1s ease;
+        transform: rotate(-90deg);
+    }
+
+    .meter-inner {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 80%;
+        height: 80%;
+        background: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        font-weight: bold;
+    }
+
+    .fun-fact-container {
+        background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin: 2rem 0;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transform-origin: center;
+        transition: all 0.5s ease;
+    }
+
+    .fun-fact {
+        opacity: 1;
+        transition: opacity 0.5s ease;
+    }
+
+    .stage-complete .progress-icon {
+        border-color: #198754;
+        transform: scale(1.1);
+    }
+
+    .stage-current .progress-icon {
+        border-color: #0d6efd;
+        animation: pulse 2s infinite;
+    }
+
+    .compatibility-particles {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+    }
+
+    .particle {
+        position: absolute;
+        background: #0d6efd;
+        border-radius: 50%;
+        pointer-events: none;
+        opacity: 0;
+    }
+
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+        100% { transform: scale(1); }
+    }
+
+    @keyframes float {
+        0% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
+        100% { transform: translateY(0px); }
+    }
+
+    @keyframes particleFloat {
+        0% { transform: translateY(0) translateX(0); opacity: 1; }
+        100% { transform: translateY(-100px) translateX(var(--x-end)); opacity: 0; }
+    }
+
+    @media (max-width: 768px) {
+        .progress-stages {
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
         }
 
-        h2 {
-            font-size: 1.5rem;
+        .progress-line {
+            height: 100%;
+            width: 3px;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
         }
 
-        .progress-stage {
-            margin: 1rem 0;
+        .compatibility-meter {
+            width: 150px;
+            height: 150px;
         }
 
         .progress-icon {
+            width: 50px;
+            height: 50px;
             font-size: 1.5rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .progress-stage h5 {
-            font-size: 0.9rem;
-        }
-
-        .fun-fact {
-            padding: 1rem;
-            margin: 1rem 0;
-        }
-
-        .fun-fact h5 {
-            font-size: 1rem;
-        }
-
-        .fun-fact p {
-            font-size: 0.9rem;
         }
     }
 </style>
@@ -93,36 +170,41 @@
 
 {% block content %}
 <div class="loading-container">
-    <h2 class="mb-3 mb-md-4">Analyzing Compatibility</h2>
+    <h2 class="mb-4">Analyzing Your Compatibility</h2>
+    
+    <div class="compatibility-meter">
+        <div class="meter-circle"></div>
+        <div class="meter-inner">0%</div>
+        <div class="compatibility-particles"></div>
+    </div>
     
     <div class="progress-stages">
         <div class="progress-stage" id="stage-auth">
             <div class="progress-icon">🔐</div>
-            <h5 class="mb-0">Authenticating</h5>
+            <h5 class="mb-0">Authentication</h5>
+            <div class="progress-line"></div>
         </div>
         
         <div class="progress-stage" id="stage-fetch">
             <div class="progress-icon">📡</div>
-            <h5 class="mb-0">Fetching Profiles</h5>
+            <h5 class="mb-0">Profile Analysis</h5>
+            <div class="progress-line"></div>
         </div>
         
         <div class="progress-stage" id="stage-posts">
             <div class="progress-icon">📝</div>
-            <h5 class="mb-0">Analyzing Posts</h5>
+            <h5 class="mb-0">Content Review</h5>
+            <div class="progress-line"></div>
         </div>
         
         <div class="progress-stage" id="stage-analyzing">
             <div class="progress-icon">🔍</div>
-            <h5 class="mb-0">Generating Results</h5>
+            <h5 class="mb-0">Final Analysis</h5>
         </div>
     </div>
     
-    <div class="progress-line">
-        <div class="progress-line-fill" style="width: 0%"></div>
-    </div>
-    
-    <div class="fun-fact mt-3 mt-md-4">
-        <h5 class="mb-2">Did you know? 🤔</h5>
+    <div class="fun-fact-container" id="fun-fact-container">
+        <h5 class="mb-3">💫 Fun Compatibility Fact</h5>
         <p id="fun-fact-text" class="mb-0"></p>
     </div>
 </div>
@@ -131,12 +213,12 @@
 {% block scripts %}
 <script>
 const funFacts = [
-    "Social media interaction patterns can reveal a lot about compatibility between people!",
-    "Shared interests are one of the strongest indicators of potential friendship.",
-    "Communication style matching is a key factor in relationship success.",
-    "People who engage with similar content often have aligned values.",
-    "Regular social media activity can indicate lifestyle compatibility.",
-    "The timing of posts can show if two people have similar daily routines.",
+    "People who share similar emoji usage patterns often have matching communication styles! 🎯",
+    "Common interests in topics can predict up to 45% of social compatibility! 📊",
+    "Matching activity patterns may indicate lifestyle compatibility! ⏰",
+    "Similar response times often suggest aligned communication preferences! 💬",
+    "Shared reactions to content can indicate aligned values and perspectives! 🎭",
+    "The timing of posts can reveal complementary daily routines! 🌟",
 ];
 
 const stages = {
@@ -148,11 +230,46 @@ const stages = {
     'complete': 5
 };
 
+function createParticle() {
+    const particles = document.querySelector('.compatibility-particles');
+    const particle = document.createElement('div');
+    particle.className = 'particle';
+    
+    const size = Math.random() * 8 + 4;
+    const xStart = Math.random() * 200;
+    const xEnd = (Math.random() - 0.5) * 100;
+    
+    particle.style.width = `${size}px`;
+    particle.style.height = `${size}px`;
+    particle.style.left = `${xStart}px`;
+    particle.style.setProperty('--x-end', `${xEnd}px`);
+    
+    particles.appendChild(particle);
+    
+    particle.style.animation = `particleFloat ${Math.random() * 2 + 1}s ease-out forwards`;
+    
+    particle.addEventListener('animationend', () => {
+        particle.remove();
+    });
+}
+
+function updateProgress(progress) {
+    const meterCircle = document.querySelector('.meter-circle');
+    const meterInner = document.querySelector('.meter-inner');
+    
+    meterCircle.style.background = `conic-gradient(from 0deg, #0d6efd ${progress}%, #e9ecef ${progress}%)`;
+    meterInner.textContent = `${Math.round(progress)}%`;
+    
+    if (progress > 0) {
+        createParticle();
+    }
+}
+
 function updateStages(currentStage) {
     const currentStageNum = stages[currentStage];
     const progressPercentage = (currentStageNum / 5) * 100;
     
-    document.querySelector('.progress-line-fill').style.width = `${progressPercentage}%`;
+    updateProgress(progressPercentage);
     
     const stageElements = ['auth', 'fetch', 'posts', 'analyzing'];
     stageElements.forEach((stage, index) => {
@@ -171,17 +288,28 @@ function updateStages(currentStage) {
 }
 
 function rotateFunFacts() {
+    const factContainer = document.getElementById('fun-fact-container');
     const factElement = document.getElementById('fun-fact-text');
     let currentIndex = 0;
     
+    factElement.textContent = funFacts[currentIndex];
+    
     setInterval(() => {
-        factElement.textContent = funFacts[currentIndex];
-        currentIndex = (currentIndex + 1) % funFacts.length;
+        factContainer.style.transform = 'scale(0.95)';
+        factElement.style.opacity = '0';
+        
+        setTimeout(() => {
+            currentIndex = (currentIndex + 1) % funFacts.length;
+            factElement.textContent = funFacts[currentIndex];
+            factContainer.style.transform = 'scale(1)';
+            factElement.style.opacity = '1';
+        }, 500);
     }, 5000);
 }
 
 document.addEventListener('DOMContentLoaded', function() {
     rotateFunFacts();
+    setInterval(createParticle, 300);
     
     const checkStatus = async () => {
         try {
