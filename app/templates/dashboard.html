@@ -25,79 +25,115 @@
         position: relative;
         height: 300px;
     }
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .metric-value {
+            font-size: 1.4rem;
+        }
+        .chart-container {
+            height: 250px;
+        }
+    }
+    
+    /* Enhanced card styles */
+    .dashboard-card {
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        border: 1px solid rgba(0,0,0,0.1);
+    }
+    
+    /* New metric indicators */
+    .trend-indicator {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.875rem;
+    }
+    .trend-up { color: #2ecc71; }
+    .trend-down { color: #e74c3c; }
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="container-fluid py-4">
-    <!-- Header -->
+    <!-- Existing Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="h4">Analytics Dashboard</h2>
         <div>
             <select class="form-select form-select-sm" id="timeRange">
-                <option value="24h">Last 24 Hours</option>
-                <option value="7d">Last 7 Days</option>
-                <option value="30d">Last 30 Days</option>
-                <option value="all">All Time</option>
+                <option value="24h" {% if selected_range == '24h' %}selected{% endif %}>Last 24 Hours</option>
+                <option value="7d" {% if selected_range == '7d' %}selected{% endif %}>Last 7 Days</option>
+                <option value="30d" {% if selected_range == '30d' %}selected{% endif %}>Last 30 Days</option>
+                <option value="all" {% if selected_range == 'all' %}selected{% endif %}>All Time</option>
             </select>
         </div>
     </div>
 
-    <!-- Key Metrics Cards -->
+    <!-- Enhanced Key Metrics Cards -->
     <div class="row g-3 mb-4">
-        <!-- Total Checks -->
-        <div class="col-md-3">
+        <!-- Existing Total Checks Card with enhanced styling -->
+        <div class="col-12 col-sm-6 col-md-3">
             <div class="card dashboard-card h-100">
                 <div class="card-body">
                     <div class="metric-title">Total Checks</div>
                     <div class="metric-value">{{ total_checks }}</div>
-                    <div class="text-success small">
+                    <div class="trend-indicator">
                         {% if total_checks != 0 %}
-                            <i class="bi bi-arrow-up"></i> {{ (checks_24h/total_checks*100)|round(1) }}% from yesterday
+                            {% if checks_24h/total_checks*100 > 0 %}
+                                <i class="bi bi-arrow-up-right trend-up"></i>
+                                <span class="text-success">{{ (checks_24h/total_checks*100)|round(1) }}% from yesterday</span>
+                            {% else %}
+                                <i class="bi bi-arrow-down-right trend-down"></i>
+                                <span class="text-danger">{{ (checks_24h/total_checks*100)|round(1) }}% from yesterday</span>
+                            {% endif %}
                         {% else %}
-                            <i class="bi bi-arrow-up"></i> No checks recorded
+                            <i class="bi bi-dash"></i>
+                            <span class="text-muted">No checks recorded</span>
                         {% endif %}
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Success Rate -->
-        <div class="col-md-3">
+        <!-- Existing Success Rate Card with enhanced styling -->
+        <div class="col-12 col-sm-6 col-md-3">
             <div class="card dashboard-card h-100">
                 <div class="card-body">
                     <div class="metric-title">Success Rate</div>
                     <div class="metric-value">
                         {{ (successful_checks / total_checks * 100) if total_checks != 0 else 0 | round(1) }}%
                     </div>
-                    <div class="text-muted small">
-                        Based on {{ total_checks }} total checks
+                    <div class="trend-indicator">
+                        <i class="bi bi-info-circle"></i>
+                        <span class="text-muted">Based on {{ total_checks }} total checks</span>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Average Processing Time -->
-        <div class="col-md-3">
+        <!-- Existing Processing Time Card with enhanced styling -->
+        <div class="col-12 col-sm-6 col-md-3">
             <div class="card dashboard-card h-100">
                 <div class="card-body">
                     <div class="metric-title">Avg Processing Time</div>
                     <div class="metric-value">{{ avg_processing_time|round(2) }}s</div>
-                    <div class="text-muted small">
-                        Last 24 hours average
+                    <div class="trend-indicator">
+                        <i class="bi bi-clock"></i>
+                        <span class="text-muted">Last 24 hours average</span>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Total Shares -->
-        <div class="col-md-3">
+        <!-- New Failed Checks Card -->
+        <div class="col-12 col-sm-6 col-md-3">
             <div class="card dashboard-card h-100">
                 <div class="card-body">
-                    <div class="metric-title">Total Shares</div>
-                    <div class="metric-value">{{ total_shares }}</div>
-                    <div class="text-muted small">
-                        Across all platforms
+                    <div class="metric-title">Failed Checks</div>
+                    <div class="metric-value">{{ total_checks - successful_checks }}</div>
+                    <div class="trend-indicator">
+                        <i class="bi bi-exclamation-triangle"></i>
+                        <span class="text-muted">{{ ((total_checks - successful_checks) / total_checks * 100)|round(1) }}% of total</span>
                     </div>
                 </div>
             </div>
@@ -106,8 +142,8 @@
 
     <!-- Charts Row -->
     <div class="row g-3 mb-4">
-        <!-- Activity Timeline -->
-        <div class="col-md-8">
+        <!-- Activity Timeline with enhanced responsiveness -->
+        <div class="col-12 col-lg-8">
             <div class="card dashboard-card h-100">
                 <div class="card-body">
                     <h5 class="card-title">Activity Timeline</h5>
@@ -118,41 +154,53 @@
             </div>
         </div>
 
-        <!-- Share Distribution -->
-        <div class="col-md-4">
+        <!-- New Processing Time Distribution -->
+        <div class="col-12 col-lg-4">
             <div class="card dashboard-card h-100">
                 <div class="card-body">
-                    <h5 class="card-title">Share Distribution</h5>
+                    <h5 class="card-title">Processing Time Distribution</h5>
                     <div class="chart-container">
-                        <canvas id="shareChart"></canvas>
+                        <canvas id="processingTimeChart"></canvas>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Popular Handles & Error Analysis -->
+    <!-- Data Tables Row -->
     <div class="row g-3">
-        <!-- Popular Handles -->
-        <div class="col-md-6">
+        <!-- Enhanced Popular Handles -->
+        <div class="col-12 col-lg-6">
             <div class="card dashboard-card">
                 <div class="card-body">
-                    <h5 class="card-title">Most Checked Handles</h5>
+                    <h5 class="card-title d-flex justify-content-between align-items-center">
+                        Most Checked Handles
+                        <span class="badge bg-primary">Top {{ popular_handles|length }}</span>
+                    </h5>
                     <div class="table-responsive">
-                        <table class="table table-sm">
+                        <table class="table table-hover table-sm">
                             <thead>
                                 <tr>
                                     <th>Handle</th>
-                                    <th>Checks</th>
-                                    <th>Last Check</th>
+                                    <th class="text-center">Checks</th>
+                                    <th class="text-end">Last Check</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {% for handle in popular_handles %}
                                 <tr>
-                                    <td>{{ handle[0] }}</td>
-                                    <td>{{ handle[1] }}</td>
-                                    <td>{{ handle[2]|datetime }}</td>   
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <i class="bi bi-person-circle me-2"></i>
+                                            {{ handle[0] }}
+                                        </div>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge bg-secondary">{{ handle[1] }}</span>
+                                    </td>
+                                    <td class="text-end text-muted">
+                                        {{ handle[2]|datetime }}
+                                    </td>   
                                 </tr>
                                 {% endfor %}
                             </tbody>
@@ -162,26 +210,34 @@
             </div>
         </div>
 
-        <!-- Error Analysis -->
-        <div class="col-md-6">
+        <!-- New Recent Activity Feed -->
+        <div class="col-12 col-lg-6">
             <div class="card dashboard-card">
                 <div class="card-body">
-                    <h5 class="card-title">Recent Errors</h5>
+                    <h5 class="card-title">Recent Activity</h5>
                     <div class="table-responsive">
-                        <table class="table table-sm">
+                        <table class="table table-hover table-sm">
                             <thead>
                                 <tr>
+                                    <th>Status</th>
+                                    <th>Handle</th>
                                     <th>Time</th>
-                                    <th>Error Type</th>
-                                    <th>Count</th>
+                                    <th>Duration</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {% for error in recent_errors %}
+                                {% for check in recent_checks %}
                                 <tr>
-                                    <td>{{ error.timestamp|datetime }}</td>
-                                    <td>{{ error.error_type }}</td>
-                                    <td>{{ error.count }}</td>
+                                    <td>
+                                        {% if check.success %}
+                                            <i class="bi bi-check-circle text-success"></i>
+                                        {% else %}
+                                            <i class="bi bi-x-circle text-danger"></i>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ check.handle2 }}</td>
+                                    <td>{{ check.timestamp|datetime }}</td>
+                                    <td>{{ check.processing_time|round(2) }}s</td>
                                 </tr>
                                 {% endfor %}
                             </tbody>
@@ -198,7 +254,7 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Activity Timeline Chart
+    // Enhanced Activity Timeline Chart
     const activityCtx = document.getElementById('activityChart').getContext('2d');
     new Chart(activityCtx, {
         type: 'line',
@@ -219,30 +275,37 @@ document.addEventListener('DOMContentLoaded', function() {
             plugins: {
                 legend: {
                     display: false
+                },
+                tooltip: {
+                    mode: 'index',
+                    intersect: false
                 }
             },
             scales: {
                 y: {
-                    beginAtZero: true
+                    beginAtZero: true,
+                    ticks: {
+                        precision: 0
+                    }
                 }
+            },
+            interaction: {
+                intersect: false,
+                mode: 'index'
             }
         }
     });
 
-    // Share Distribution Chart
-    const shareCtx = document.getElementById('shareChart').getContext('2d');
-    new Chart(shareCtx, {
-        type: 'doughnut',
+    // New Processing Time Distribution Chart
+    const processingCtx = document.getElementById('processingTimeChart').getContext('2d');
+    new Chart(processingCtx, {
+        type: 'bar',
         data: {
-            labels: {{ share_labels|tojson }},
+            labels: ['0-1s', '1-2s', '2-3s', '3-4s', '4-5s', '5s+'],
             datasets: [{
-                data: {{ share_data|tojson }},
-                backgroundColor: [
-                    '#2ecc71',
-                    '#3498db',
-                    '#9b59b6',
-                    '#e74c3c'
-                ]
+                label: 'Number of Checks',
+                data: {{ processing_time_distribution|default([0,0,0,0,0,0])|tojson }},
+                backgroundColor: '#2ecc71'
             }]
         },
         options: {
@@ -250,14 +313,36 @@ document.addEventListener('DOMContentLoaded', function() {
             maintainAspectRatio: false,
             plugins: {
                 legend: {
-                    position: 'bottom'
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        precision: 0
+                    }
                 }
             }
         }
     });
 
-    // Time Range Selector
+    // Enhanced Time Range Selector
     document.getElementById('timeRange').addEventListener('change', function(e) {
+        const loadingOverlay = document.createElement('div');
+        loadingOverlay.style.position = 'fixed';
+        loadingOverlay.style.top = '0';
+        loadingOverlay.style.left = '0';
+        loadingOverlay.style.right = '0';
+        loadingOverlay.style.bottom = '0';
+        loadingOverlay.style.backgroundColor = 'rgba(255,255,255,0.7)';
+        loadingOverlay.style.display = 'flex';
+        loadingOverlay.style.justifyContent = 'center';
+        loadingOverlay.style.alignItems = 'center';
+        loadingOverlay.style.zIndex = '9999';
+        loadingOverlay.innerHTML = '<div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div>';
+        document.body.appendChild(loadingOverlay);
+        
         window.location.href = `{{ url_for('admin.dashboard') }}?range=${e.target.value}`;
     });
 });

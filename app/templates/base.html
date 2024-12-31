@@ -68,6 +68,14 @@
             height: 40px;
             transition: height 0.3s ease;
         }
+        .navbar-nav .nav-link {
+            padding: 0.5rem 1rem;
+            transition: opacity 0.3s ease;
+        }
+
+        .navbar-nav .nav-link:hover {
+            opacity: 0.8;
+        }
         @keyframes float {
             0% { transform: translateY(0px); }
             50% { transform: translateY(-10px); }
@@ -122,6 +130,14 @@
                 <span class="floating-icon">💘</span>
                 SkyCrush Compatibility Checker
             </span>
+
+            <!-- Add this navigation items container -->
+            <div class="navbar-nav ms-auto">
+                {% if session.get('logged_in') %}
+                    <a class="nav-link text-white" href="{{ url_for('auth.logout') }}">Logout</a>
+                {% endif %}
+            </div>
+        </div>
         </div>
     </nav>
 

@@ -8,7 +8,11 @@ class Config:
     BLUESKY_USERNAME = os.getenv("USERNAME")
     BLUESKY_PASSWORD = os.getenv("PASSWORD")
 
-        # Database configuration
+    # Database configuration
     SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+    SESSION_TYPE = 'filesystem'
+
+    
 
