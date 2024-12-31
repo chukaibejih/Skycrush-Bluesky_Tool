@@ -323,9 +323,9 @@ class ImprovedCompatibilityAnalyzer:
             compatibility_factors = metrics["compatibility_factors"]
             
             base_prompt = (
-                f"Generate compatibility narratives for multiple categories between two users.\n"
-                f"User 1: {context['user1']['display_name']} (Profile Summary: {context['user1']['description']}, Posts: {context['user1']['posts']})\n"
-                f"User 2: {context['user2']['display_name']} (Profile Summary: {context['user2']['description']}, Posts: {context['user2']['posts']})\n"
+                f"Generate compatibility narratives for multiple categories between a user and their crush\n"
+                f"User: {context['user1']['display_name']} (Profile Summary: {context['user1']['description']}, Posts: {context['user1']['posts']})\n"
+                f"Crush: {context['user2']['display_name']} (Profile Summary: {context['user2']['description']}, Posts: {context['user2']['posts']})\n"
                 f"Shared Interests: {', '.join(shared_interests)}\n"
                 f"Key Compatibility Factors: {', '.join(compatibility_factors)}\n\n"
                 "Guidelines:\n"
