@@ -1,297 +1,3 @@
-# import random
-# import os
-# import random
-# from typing import Dict, List, Any
-# import requests
-# from bluesky_api import BlueskyAPI
-
-
-# class CompatibilityNarrativeGenerator:
-#     def __init__(self):
-#         # Initialize Anthropic client
-#         self.GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
-
-#     def generate_compatibility_narrative(self, user1_data: Dict[Any, Any], 
-#                                         user2_data: Dict[Any, Any], 
-#                                         user1_posts: list, 
-#                                         user2_posts: list) -> Dict[str, Any]:
-#         """
-#         Generate compatibility narratives and metrics
-#         """
-#         # Prepare the context using user data and posts
-#         context = self._prepare_context(user1_data, user2_data, user1_posts, user2_posts)
-        
-#         # Generate narratives for all compatibility types
-#         narratives = {
-#             "romantic": self._generate_narrative("romantic", context, user1_posts, user2_posts),
-#             "friendship": self._generate_narrative("friendship", context, user1_posts, user2_posts),
-#             "emotional": self._generate_narrative("emotional", context, user1_posts, user2_posts),
-#             "communication": self._generate_narrative("communication", context, user1_posts, user2_posts),
-#             "values": self._generate_narrative("values", context, user1_posts, user2_posts),
-#             "lifestyle": self._generate_narrative("lifestyle", context,user1_posts, user2_posts)
-#         }
-        
-#         # Calculate compatibility metrics
-#         metrics = self._calculate_compatibility_metrics(context)
-        
-#         # Return a dictionary with narratives and metrics
-#         return {
-#             "narratives": narratives,
-#             "metrics": metrics
-#         }
-
-
-# class CompatibilityNarrativeGenerator:
-#     def __init__(self):
-#         # Initialize API Key
-#         self.GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
-
-#     def generate_compatibility_narrative(self, user1_data: Dict[Any, Any], 
-#                                          user2_data: Dict[Any, Any], 
-#                                          user1_posts: list, 
-#                                          user2_posts: list) -> Dict[str, Any]:
-#         """
-#         Generate compatibility narratives and metrics
-#         """
-#         # Prepare the context using user data and posts
-#         context = self._prepare_context(user1_data, user2_data, user1_posts, user2_posts)
-        
-#         # Generate narratives for all compatibility types
-#         narratives = {
-#             "romantic": self._generate_narrative("romantic", context),
-#             "friendship": self._generate_narrative("friendship", context),
-#             "emotional": self._generate_narrative("emotional", context),
-#             "communication": self._generate_narrative("communication", context),
-#             "values": self._generate_narrative("values", context),
-#             "lifestyle": self._generate_narrative("lifestyle", context),
-#         }
-        
-#         # Calculate compatibility metrics
-#         metrics = self._calculate_compatibility_metrics(context)
-        
-#         return {
-#             "narratives": narratives,
-#             "metrics": metrics
-#         }
-
-#     def _calculate_compatibility_metrics(self, context: Dict[str, Any]) -> Dict[str, Any]:
-#         """
-#         Calculate compatibility percentages based on various factors
-#         """
-#         user1_themes = self._analyze_post_themes(context["user1"]["recent_topics"])
-#         user2_themes = self._analyze_post_themes(context["user2"]["recent_topics"])
-
-#         # Define scores for each category
-#         category_scores = {category: self._calculate_category_score(context, user1_themes, user2_themes, category)
-#                            for category in ["romantic", "friendship", "emotional", "communication", "values", "lifestyle"]}
-        
-#         overall_score = sum(category_scores.values()) / len(category_scores)
-
-#         return {
-#             "overall": round(overall_score, 2),
-#             "categories": {key: round(value, 2) for key, value in category_scores.items()},
-#             "strength_factors": self._identify_strength_factors(context, user1_themes, user2_themes)
-#         }
-
-#     def _calculate_category_score(self, context: Dict[str, Any], user1_themes: List[str], 
-#                                   user2_themes: List[str], category: str) -> float:
-#         """
-#         Calculate compatibility score for a specific category
-#         """
-#         base_score = 50.0
-#         shared_themes = set(user1_themes) & set(user2_themes)
-#         score = base_score + len(shared_themes) * 5
-#         return min(100, max(0, score))
-
-#     def _identify_strength_factors(self, context: Dict[str, Any], user1_themes: List[str], 
-#                                    user2_themes: List[str]) -> List[str]:
-#         """
-#         Identify key factors contributing to compatibility
-#         """
-#         strengths = []
-#         shared_themes = set(user1_themes) & set(user2_themes)
-#         if shared_themes:
-#             strengths.append(f"Shared interests in {', '.join(shared_themes)}")
-#         if self._has_compatible_communication_styles(context["user1"], context["user2"]):
-#             strengths.append("Compatible communication styles")
-#         return strengths
-
-#     def _has_compatible_communication_styles(self, user1: Dict[str, Any], user2: Dict[str, Any]) -> bool:
-#         """
-#         Analyze if users have compatible communication styles
-#         """
-#         return True  # Placeholder implementation
-
-#     def _prepare_context(self, user1_data, user2_data, user1_posts, user2_posts):
-#         """
-#         Prepare a structured context for AI narrative generation
-#         """
-#         return {
-#             "user1": {
-#                 "handle": user1_data.get("handle", "Unknown"),
-#                 "display_name": user1_data.get("displayName", "Anonymous"),
-#                 "description": user1_data.get("description", ""),
-#                 "followers_count": user1_data.get("followersCount", 0),
-#                 "posts_count": user1_data.get("postsCount", 0),
-#                 "recent_topics": self._extract_recent_topics(user1_posts),
-#             },
-#             "user2": {
-#                 "handle": user2_data.get("handle", "Unknown"),
-#                 "display_name": user2_data.get("displayName", "Anonymous"),
-#                 "description": user2_data.get("description", ""),
-#                 "followers_count": user2_data.get("followersCount", 0),
-#                 "posts_count": user2_data.get("postsCount", 0),
-#                 "recent_topics": self._extract_recent_topics(user2_posts),
-#             },
-#         }
-
-#     def _extract_recent_topics(self, posts, top_n=5) -> List[str]:
-#         """
-#         Extract top recent topics from posts
-#         """
-#         return [post.get("post", {}).get("record", {}).get("text", "").strip() for post in posts[:top_n]]
-
-#     def _generate_narrative(self, compatibility_type: str, context: Dict[str, Any]) -> str:
-#         """
-#         Generate an AI-powered narrative for a specific compatibility type
-#         """
-#         try:
-#             url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-001:generateContent?key={self.GOOGLE_API_KEY}"
-#             headers = {"Content-Type": "application/json"}
-
-#             type_specific_guidelines = {
-#                 "romantic": "Focus on shared interests and emotional alignment.",
-#                 "friendship": "Highlight mutual activities and trust factors.",
-#                 "emotional": "Discuss empathetic connections and shared emotional responses.",
-#                 "communication": "Analyze conversational flow and understanding.",
-#                 "values": "Evaluate alignment of morals and principles.",
-#                 "lifestyle": "Compare daily habits, goals, and routines.",
-#             }
-
-#             prompt = (
-#                 f"Generate a narrative for {compatibility_type} compatibility:\n"
-#                 f"Guidelines: {type_specific_guidelines[compatibility_type]}\n"
-#                 f"Tone: Informal, use of raw and vulgar words are allowed. Sound more human as oppose to AI"
-#                 f"Do not assume a gender for any user"
-#                 f"Context: {context}"
-#                 f"Word count: Max of 200 words"
-#             )
-
-#             data = {
-#                 "contents": [{
-#                     "parts": [{
-#                         "text": prompt
-#                     }]
-#                 }]
-#             }
-
-#             response = requests.post(url, json=data, headers=headers)
-
-#             if response.status_code == 200:
-#                 response_dict = response.json()
-#                 ai_response = response_dict['candidates'][0]['content']['parts'][0]['text']
-#                 return ai_response
-#             else:
-#                 return f"Failed to generate narrative. Status code: {response.status_code}"
-        
-#         except Exception as e:
-#             return f"Compatibility narrative generation failed: {str(e)}"
-
-
-#     def _analyze_post_themes(self, posts: List[str]) -> str:
-#         """
-#         Analyze recurring themes in user posts
-#         """
-#         # Simple theme extraction - could be enhanced with NLP
-#         themes = []
-#         text_blob = " ".join(posts).lower()
-        
-#         # Common theme categories to check for
-#         theme_categories = {
-#             "tech": ["technology", "coding", "programming", "ai", "software", "tech"],
-#             "creative": ["art", "music", "writing", "create", "design"],
-#             "professional": ["work", "business", "career", "professional"],
-#             "social": ["friends", "community", "social", "people"],
-#             "academic": ["research", "study", "learning", "education"],
-#             "lifestyle": ["travel", "food", "fitness", "life"],
-#         }
-        
-#         for category, keywords in theme_categories.items():
-#             if any(keyword in text_blob for keyword in keywords):
-#                 themes.append(category)
-        
-#         return ", ".join(themes) if themes else "No clear recurring themes"
-
-#     def _format_posts_for_analysis(self, posts: List[str]) -> str:
-#         """
-#         Format posts for better AI analysis
-#         """
-#         formatted_posts = []
-#         for i, post in enumerate(posts[:20], 1): 
-#             formatted_posts.append(f"Post {i}: {post}")
-        
-#         return "\n".join(formatted_posts)
-
-# def generate_ai_compatibility(user1_data, user2_data):
-#     """
-#     Main function to generate AI-powered compatibility narratives and metrics
-#     """
-#     bluesky = BlueskyAPI()
-#     # Fetch posts for both users with a reasonable limit
-#     user1_posts_response = bluesky.fetch_user_posts(user1_data['handle'], limit=20)
-#     user2_posts_response = bluesky.fetch_user_posts(user2_data['handle'], limit=20)
-    
-#     # Extract posts from the API response
-#     user1_posts = []
-#     user2_posts = []
-    
-#     if 'feed' in user1_posts_response:
-#         user1_posts = [
-#             {
-#                 'post': {
-#                     'record': {
-#                         'text': item.get('post', {}).get('record', {}).get('text', '')
-#                     }
-#                 }
-#             }
-#             for item in user1_posts_response['feed']
-#             if 'post' in item
-#         ]
-    
-#     if 'feed' in user2_posts_response:
-#         user2_posts = [
-#             {
-#                 'post': {
-#                     'record': {
-#                         'text': item.get('post', {}).get('record', {}).get('text', '')
-#                     }
-#                 }
-#             }
-#             for item in user2_posts_response['feed']
-#             if 'post' in item
-#         ]
-    
-#     # Initialize narrative generator
-#     narrative_generator = CompatibilityNarrativeGenerator()
-    
-#     # Generate narratives and metrics
-#     narratives_and_metrics = narrative_generator.generate_compatibility_narrative(
-#         user1_data, user2_data, user1_posts, user2_posts
-#     )
-    
-#     return {
-#         "user1": user1_data['handle'],
-#         "user2": user2_data['handle'],
-#         "narratives": narratives_and_metrics['narratives'],
-#         "metrics": narratives_and_metrics['metrics'],
-#         "analysis_based_on": {
-#             "user1_posts_analyzed": len(user1_posts),
-#             "user2_posts_analyzed": len(user2_posts)
-#         }
-#     }
-
-
-
 import json
 import math
 import os
@@ -313,8 +19,7 @@ import emoji
 
 class ImprovedCompatibilityAnalyzer:
     def __init__(self):
-        self.GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
-        
+       
         # Download all required NLTK resources
         try:
             nltk.download('punkt')
@@ -344,19 +49,18 @@ class ImprovedCompatibilityAnalyzer:
             'academic': ['research', 'study', 'learning', 'science', 'phd', 'academic', 'university'],
             'lifestyle': ['fitness', 'health', 'food', 'travel', 'fashion', 'lifestyle'],
             'social': ['friends', 'family', 'community', 'social', 'party', 'meetup'],
-            'professional': ['work', 'business', 'career', 'job', 'professional', 'industry'],
-            'health': ['fitness', 'exercise', 'diet', 'healthy', 'wellness', 'mental', 'strength', 'workout'],
-            'sex': ['sexual', 'tits', 'titties', 'meat', 'dick', 'cum', 'anal', 'ass', 'plug', 'nudes', 'nsfw', '#afterdark', 'skeetsafterdark', 'pussy', 'squirt', 'sex', 'boobs', 'horny']
+            'professional': ['work', 'business', 'career', 'job', 'professional', 'industry']
         }
 
+        # Get both API keys
         self.GOOGLE_API_KEY_1 = os.getenv("GOOGLE_API_KEY_1")
         self.GOOGLE_API_KEY_2 = os.getenv("GOOGLE_API_KEY_2")
         if not self.GOOGLE_API_KEY_1 or not self.GOOGLE_API_KEY_2:
             raise ValueError("Both GOOGLE_API_KEY_1 and GOOGLE_API_KEY_2 must be set in environment variables")
 
     def _get_random_api_key(self):
-            """Randomly select one of the API keys"""
-            return random.choice([self.GOOGLE_API_KEY_1, self.GOOGLE_API_KEY_2])
+        """Randomly select one of the API keys"""
+        return random.choice([self.GOOGLE_API_KEY_1, self.GOOGLE_API_KEY_2])
 
     def generate_compatibility_analysis(self, 
                                      user1_data: Dict[Any, Any],
@@ -612,58 +316,6 @@ class ImprovedCompatibilityAnalyzer:
         return (activity_compatibility * 0.5 + interest_alignment * 0.5)
 
     def _generate_enhanced_narratives(self, context: Dict[str, Any], metrics: Dict[str, Any]) -> Dict[str, str]:
-        """Generate personalized compatibility narratives"""
-        narratives = {}
-        
-        # Generate narrative for each category
-        for category in ["romantic", "friendship", "emotional", "communication", "values", "lifestyle"]:
-            narrative_prompt = self._create_narrative_prompt(
-                category,
-                context,
-                metrics,
-                metrics["categories"][category]
-            )
-            
-            narratives[category] = self._generate_narrative_with_ai(narrative_prompt)
-            
-        return narratives
-
-    def _create_narrative_prompt(self, category: str, context: Dict[str, Any], 
-                               metrics: Dict[str, Any], score: float) -> str:
-        """Create detailed prompts for narrative generation"""
-        
-        shared_interests = metrics["shared_interests"]
-        compatibility_factors = metrics["compatibility_factors"]
-
-        
-        base_prompt = (
-            f"Generate a detailed {category} compatibility narrative for two users.\n"
-            f"Compatibility Score: {score}%\n"
-            f"User 1: {context['user1']['display_name']} (Profile Summary: {context['user1']['description']}, Posts: {context['user1']['posts']})\n"
-            f"User 2: {context['user2']['display_name']} (Profile Summary: {context['user2']['description']}, Posts: {context['user2']['posts']})\n"
-            f"Shared Interests: {', '.join(shared_interests)}\n"
-            f"Key Compatibility Factors: {', '.join(compatibility_factors)}\n"
-            "Guidelines:\n"
-            "- Adopt a conversational and friendly tone\n"
-            "- Use engaging, relatable language, avoiding overly formal tones\n"
-            "- Add depth to the narrative\n"
-            "- Highlight both positive and constructive aspects of their compatibility\n"
-            "- Emphasize the value of shared interests and unique traits\n"
-            "- Provide actionable insights for strengthening the connection\n"
-            "- DO NOT quote or directly reference specific posts from either user\n"
-            "- Instead, describe general themes and patterns from their content\n"
-            "- Keep the response concise and within 150 words"
-            "\n\nExample:\n"
-            "Compatibility Narrative:\n"
-            "\"Anna and David have a strong foundation of shared interests, including hiking and cooking, which can make their bond fun and active. "
-            "Anna's adventurous spirit complements David's methodical approach, creating a dynamic balance. "
-            "While their communication styles differ—Anna is more spontaneous, and David prefers planning—this can lead to enriching learning experiences. "
-            "To enhance their connection, they could try exploring new cuisines together or planning a weekend hiking trip.\""
-        )
-
-        return base_prompt
-
-    def _generate_enhanced_narratives(self, context: Dict[str, Any], metrics: Dict[str, Any]) -> Dict[str, str]:
         """Generate personalized compatibility narratives in a single API call"""
         try:
             # Create a combined prompt for all categories
@@ -683,13 +335,10 @@ class ImprovedCompatibilityAnalyzer:
                 "- Highlight both positive and constructive aspects\n"
                 "- Emphasize shared interests and unique traits\n"
                 "- Provide actionable insights\n"
-                "- For scores below 30%, feel free to playfully roast the compatibility (keep it light and fun!)\n"
-                "- When roasting, focus on the situation, not the individuals\n"
-                "- Mix in pop culture references for extra humor when appropriate\n"
                 "- DO NOT quote specific posts\n"
+                "- DO NOT use the phrases 'tech-savvy' or 'shared love of technology' as they lack depth and are repetitive\n"
                 "- Keep each narrative within 150 words\n\n"
-                "Your entire response/output is going to consist of a single JSON object {}, and you  MUST NOT wrap it within JSON md markers.\n"
-                "Ensure all double quotes within string values are properly escaped using a backslash (\).\n"
+                "Your entire response/output is going to consist of a single JSON object {}, and you MUST NOT wrap it within JSON md markers.\n"
                 "Return a JSON object with the following structure:\n"
                 "{\n"
                 '  "romantic": "narrative for romantic compatibility",\n'
@@ -708,7 +357,7 @@ class ImprovedCompatibilityAnalyzer:
                 f"Lifestyle Score: {metrics['categories']['lifestyle']}%"
             )
 
-            url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-001:generateContent?key={self.GOOGLE_API_KEY}"
+            url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-001:generateContent?key={self._get_random_api_key()}"
             
             data = {
                 "contents": [{
@@ -728,27 +377,25 @@ class ImprovedCompatibilityAnalyzer:
                 response_data = response.json()
                 if 'candidates' in response_data and response_data['candidates']:
                     narrative_text = response_data['candidates'][0]['content']['parts'][0]['text']
-                    print("narrative_text---", narrative_text)
                     
                     # Extract JSON from the response
-                    # try:
+                    try:
                         # Find the JSON object in the response text
-                    json_start = narrative_text.find('{')
-                    json_end = narrative_text.rfind('}') + 1
-                    if json_start >= 0 and json_end > json_start:
-                        json_str = narrative_text[json_start:json_end]
-                        
-                        narratives = json.loads(json_str)
-                        
-                        # Verify all required categories are present
-                        required_categories = ["romantic", "friendship", "emotional", "communication", "values", "lifestyle"]
-                        for category in required_categories:
-                            if category not in narratives:
-                                narratives[category] = f"Failed to generate {category} narrative."
-                                
-                        return narratives
-                    # except json.JSONDecodeError:
-                    #     print("Failed to parse JSON from response")
+                        json_start = narrative_text.find('{')
+                        json_end = narrative_text.rfind('}') + 1
+                        if json_start >= 0 and json_end > json_start:
+                            json_str = narrative_text[json_start:json_end]
+                            narratives = json.loads(json_str)
+                            
+                            # Verify all required categories are present
+                            required_categories = ["romantic", "friendship", "emotional", "communication", "values", "lifestyle"]
+                            for category in required_categories:
+                                if category not in narratives:
+                                    narratives[category] = f"Failed to generate {category} narrative."
+                                    
+                            return narratives
+                    except json.JSONDecodeError:
+                        print("Failed to parse JSON from response")
                         
             # Fallback responses if API call fails
             return {
@@ -1020,7 +667,7 @@ class ImprovedCompatibilityAnalyzer:
             'technology': ['tech', 'innovation', 'future', 'software', 'AI', 'device', 'app', 'digital'],
             'humor': ['funny', 'joke', 'laugh', 'meme', 'hilarious', 'giggle', 'comedy', 'wit'],
             'health': ['fitness', 'exercise', 'diet', 'healthy', 'wellness', 'mental', 'strength', 'workout'],
-            'sex': ['sexual', 'tits', 'horny', 'titties', 'meat', 'dick', 'cum', 'anal', 'ass', 'plug', 'nudes', 'nsfw', '#afterdark', 'skeetsafterdark', 'pussy', 'squirt', 'sex', 'boobs']
+            'sex': ['sexual', 'tits', 'titties', 'meat', 'dick', 'cum', 'anal', 'ass', 'plug', 'nudes', 'nsfw', '#afterdark', 'skeetsafterdark', 'pussy', 'squirt', 'sex', 'boobs']
         }
 
         
