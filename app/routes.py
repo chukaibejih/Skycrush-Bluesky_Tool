@@ -1,5 +1,6 @@
 from datetime import datetime
 import os
+import random
 from flask import Blueprint, flash, render_template, request, redirect, url_for, session, jsonify
 from bluesky_api import BlueskyAPI
 from compatibility import ImprovedCompatibilityAnalyzer
@@ -45,8 +46,16 @@ def process_compatibility(app: Flask, job_id: str, handle1: str, handle2: str):
         
         print(f"Fetching posts")
         processing_jobs[job_id]['status'] = 'fetching_posts'
-        user1_posts = bluesky.fetch_user_posts(handle1, limit=50)['feed']
-        user2_posts = bluesky.fetch_user_posts(handle2, limit=50)['feed']
+        
+        # In process_compatibility function, change these lines:
+        user1_posts = bluesky.fetch_user_posts(handle1)['feed']
+        user2_posts = bluesky.fetch_user_posts(handle2)['feed']
+
+        # Random selection if more than 50 posts
+        if len(user1_posts) > 50:
+            user1_posts = random.sample(user1_posts, 50)
+        if len(user2_posts) > 50:
+            user2_posts = random.sample(user2_posts, 50)
         
         print(f"Analyzing data")
         processing_jobs[job_id]['status'] = 'analyzing'
