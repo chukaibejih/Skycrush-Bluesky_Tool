@@ -1,12 +1,14 @@
 from flask import Blueprint, render_template, request
 from sqlalchemy import func
 from datetime import datetime, timedelta
+from app.auth import login_required
 from app.models import db, AppMetrics, CompatibilityCheck, ShareMetrics
 from app import db
 
 admin_bp = Blueprint('admin', __name__, url_prefix='/admin')
 
 @admin_bp.route('/dashboard')
+@login_required
 def dashboard():
     # Get time range from query params
     time_range = request.args.get('range', '24h')
@@ -65,14 +67,6 @@ def dashboard():
         activity_labels.append(current.strftime(format_str))
         current = next_period
 
-    # Share distribution
-    share_distribution = db.session.query(
-        ShareMetrics.share_type,
-        func.count(ShareMetrics.id)
-    ).group_by(ShareMetrics.share_type).all()
-    
-    share_labels = [item[0] for item in share_distribution]
-    share_data = [item[1] for item in share_distribution]
 
     # Popular handles
     popular_handles = db.session.query(
@@ -85,21 +79,38 @@ def dashboard():
         CompatibilityCheck.handle2.isnot(None)  # Ensure handle2 is not null
     ).order_by(
         func.count(CompatibilityCheck.id).desc()
-    ).limit(5).all()
+    ).limit(10).all()
 
-    # Recent errors
-    recent_errors = db.session.query(
-        CompatibilityCheck.error_message.label('error_type'),
-        func.count(CompatibilityCheck.id).label('count'),
-        func.max(CompatibilityCheck.timestamp).label('timestamp')
-    ).filter(
-        CompatibilityCheck.success == False,
-        CompatibilityCheck.timestamp > start_date
-    ).group_by(
-        CompatibilityCheck.error_message
-    ).order_by(
-        func.count(CompatibilityCheck.id).desc()
-    ).limit(5).all()
+    recent_checks = CompatibilityCheck.query.order_by(
+    CompatibilityCheck.timestamp.desc()
+    ).limit(10).all()
+
+    # Calculate processing time distribution
+    processing_time_buckets = [0, 1, 2, 3, 4, 5]
+    processing_time_distribution = []
+
+    for i in range(len(processing_time_buckets)):
+        lower_bound = processing_time_buckets[i]
+        upper_bound = processing_time_buckets[i + 1] if i < len(processing_time_buckets) - 1 else None
+        
+        query = db.session.query(func.count(CompatibilityCheck.id))
+        
+        if upper_bound is None:
+            # For the last bucket (5+ seconds)
+            count = query.filter(
+                CompatibilityCheck.timestamp > start_date,
+                CompatibilityCheck.processing_time >= lower_bound
+            ).scalar()
+        else:
+            # For all other buckets
+            count = query.filter(
+                CompatibilityCheck.timestamp > start_date,
+                CompatibilityCheck.processing_time >= lower_bound,
+                CompatibilityCheck.processing_time < upper_bound
+            ).scalar()
+        
+        processing_time_distribution.append(count or 0)
+
 
     return render_template(
         'dashboard.html',
@@ -110,9 +121,8 @@ def dashboard():
         total_shares=total_shares,
         activity_labels=activity_labels,
         activity_data=activity_data,
-        share_labels=share_labels,
-        share_data=share_data,
+        recent_checks=recent_checks,
+        processing_time_distribution=processing_time_distribution,
         popular_handles=popular_handles,
-        recent_errors=recent_errors,
         selected_range=time_range
     )
